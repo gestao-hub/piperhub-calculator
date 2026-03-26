@@ -15,6 +15,7 @@ export interface Product {
   setupFee: number
   color: { primary: string; secondary: string; bg: string; border: string; text: string }
   logo: string
+  logoLight: string
   modules: Module[]
 }
 
@@ -82,7 +83,8 @@ export const PRODUCTS: Product[] = [
       border: 'border-blue-500/40',
       text: 'text-blue-400',
     },
-    logo: '/pipercore-logo.png',
+    logo: '/piperkey-logo.png',
+    logoLight: '/piperkey-logo-light.png',
     modules: [
       { id: 'pk-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
       { id: 'pk-agenda', name: 'Agenda', description: 'Agendamento de visitas e reunioes', icon: 'Calendar', price: 0, included: true },
@@ -116,6 +118,7 @@ export const PRODUCTS: Product[] = [
       text: 'text-emerald-400',
     },
     logo: '/pipercore-logo-dark.png',
+    logoLight: '/pipercore-logo-light.png',
     modules: [
       { id: 'pc-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline', icon: 'GitBranch', price: 0, included: true },
       { id: 'pc-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
@@ -141,7 +144,8 @@ export const PRODUCTS: Product[] = [
       border: 'border-purple-500/40',
       text: 'text-purple-400',
     },
-    logo: '/piperleads-logo-white.svg',
+    logo: '/piperleads-logo.png',
+    logoLight: '/piperleads-logo-light.png',
     modules: [
       { id: 'pl-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
       { id: 'pl-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
