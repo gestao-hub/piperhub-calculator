@@ -217,24 +217,17 @@ export function PriceSummary({
           <Separator className="my-6" />
 
           {/* Setup fee */}
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-secondary/50 border border-border/50">
-            <Wrench className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-            <div className="flex-1">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Taxa de implantacao</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    2,5x a mensalidade - setup completo + treinamento (pagamento unico)
-                  </p>
-                </div>
-                <span
-                  className="text-lg font-display font-bold"
-                  style={{ color: product.color.primary }}
-                >
-                  {formatCurrency(breakdown.setupFee)}
-                </span>
-              </div>
+          <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border/50">
+            <div className="flex items-center gap-3">
+              <Wrench className="w-5 h-5 text-muted-foreground shrink-0" />
+              <p className="text-sm font-semibold text-foreground">Taxa de implantacao</p>
             </div>
+            <span
+              className="text-lg font-display font-bold"
+              style={{ color: product.color.primary }}
+            >
+              {formatCurrency(breakdown.setupFee)}
+            </span>
           </div>
 
           {/* PiperHunt credit note */}
