@@ -12,6 +12,7 @@ export interface Product {
   name: string
   tagline: string
   basePrice: number
+  setupFee: number
   color: { primary: string; secondary: string; bg: string; border: string; text: string }
   logo: string
   modules: Module[]
@@ -33,6 +34,7 @@ export interface PeriodDiscount {
 
 export interface PricingConfig {
   basePrices: Record<string, number>
+  setupFees: Record<string, number>
   modulePrices: Record<string, Record<string, number>>
   tierDiscounts: number[]
   periodDiscounts: Record<string, number>
@@ -49,6 +51,7 @@ export interface PriceBreakdown {
   periodDiscountAmount: number
   total: number
   totalAnnual: number
+  setupFee: number
 }
 
 export const USER_TIERS: UserTier[] = [
@@ -70,7 +73,8 @@ export const PRODUCTS: Product[] = [
     id: 'piperkey',
     name: 'PiperKey',
     tagline: 'CRM Imobiliario com IA',
-    basePrice: 89,
+    basePrice: 98,
+    setupFee: 1649,
     color: {
       primary: '#2B7FD9',
       secondary: '#D4A920',
@@ -85,24 +89,25 @@ export const PRODUCTS: Product[] = [
       { id: 'pk-monitoramento', name: 'Monitoramento', description: 'Monitoramento de atividades e equipe', icon: 'Eye', price: 0, included: true },
       { id: 'pk-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
       { id: 'pk-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
-      { id: 'pk-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 349, included: false },
-      { id: 'pk-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 89, included: false },
-      { id: 'pk-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 199, included: false },
-      { id: 'pk-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 49, included: false },
-      { id: 'pk-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 129, included: false },
-      { id: 'pk-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 79, included: false },
-      { id: 'pk-analise-mercado', name: 'Analise de Mercado', description: 'Inteligencia de mercado imobiliario', icon: 'Globe', price: 149, included: false },
-      { id: 'pk-pipeline-financeiro', name: 'Pipeline Financeiro', description: 'Gestao de pipeline financeiro', icon: 'DollarSign', price: 99, included: false },
-      { id: 'pk-pos-venda', name: 'Pos-Venda', description: 'Gestao do pos-venda e entrega', icon: 'Package', price: 99, included: false },
-      { id: 'pk-gestao-aluguel', name: 'Gestao de Aluguel', description: 'Administracao de imoveis para aluguel', icon: 'Home', price: 149, included: false },
-      { id: 'pk-propriedades', name: 'Propriedades', description: 'Catalogo e gestao de propriedades', icon: 'Building', price: 79, included: false },
+      { id: 'pk-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 384, included: false },
+      { id: 'pk-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 98, included: false },
+      { id: 'pk-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 219, included: false },
+      { id: 'pk-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 54, included: false },
+      { id: 'pk-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 142, included: false },
+      { id: 'pk-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 87, included: false },
+      { id: 'pk-analise-mercado', name: 'Analise de Mercado', description: 'Inteligencia de mercado imobiliario', icon: 'Globe', price: 164, included: false },
+      { id: 'pk-pipeline-financeiro', name: 'Pipeline Financeiro', description: 'Gestao de pipeline financeiro', icon: 'DollarSign', price: 109, included: false },
+      { id: 'pk-pos-venda', name: 'Pos-Venda', description: 'Gestao do pos-venda e entrega', icon: 'Package', price: 109, included: false },
+      { id: 'pk-gestao-aluguel', name: 'Gestao de Aluguel', description: 'Administracao de imoveis para aluguel', icon: 'Home', price: 164, included: false },
+      { id: 'pk-propriedades', name: 'Propriedades', description: 'Catalogo e gestao de propriedades', icon: 'Building', price: 87, included: false },
     ],
   },
   {
     id: 'pipercore',
     name: 'PiperCore',
     tagline: 'CRM para Contabilidade',
-    basePrice: 69,
+    basePrice: 76,
+    setupFee: 989,
     color: {
       primary: '#00E632',
       secondary: '#0F1729',
@@ -115,19 +120,20 @@ export const PRODUCTS: Product[] = [
       { id: 'pc-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline', icon: 'GitBranch', price: 0, included: true },
       { id: 'pc-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
       { id: 'pc-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 0, included: true },
-      { id: 'pc-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 299, included: false },
-      { id: 'pc-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 79, included: false },
-      { id: 'pc-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 149, included: false },
-      { id: 'pc-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 39, included: false },
-      { id: 'pc-analytics-avancado', name: 'Analytics Avancado', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 59, included: false },
-      { id: 'pc-monitoramento-avancado', name: 'Monitoramento Avancado', description: 'Monitoramento avancado com alertas', icon: 'Shield', price: 49, included: false },
+      { id: 'pc-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 329, included: false },
+      { id: 'pc-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 87, included: false },
+      { id: 'pc-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 164, included: false },
+      { id: 'pc-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 43, included: false },
+      { id: 'pc-analytics-avancado', name: 'Analytics Avancado', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 65, included: false },
+      { id: 'pc-monitoramento-avancado', name: 'Monitoramento Avancado', description: 'Monitoramento avancado com alertas', icon: 'Shield', price: 54, included: false },
     ],
   },
   {
     id: 'piperleads2',
     name: 'PiperLeads2',
     tagline: 'CRM de Vendas com IA',
-    basePrice: 79,
+    basePrice: 87,
+    setupFee: 1319,
     color: {
       primary: '#A78BFA',
       secondary: '#BFFF00',
@@ -143,15 +149,15 @@ export const PRODUCTS: Product[] = [
       { id: 'pl-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
       { id: 'pl-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
       { id: 'pl-automacoes', name: 'Automacoes', description: 'Workflows e automacoes de processos', icon: 'Zap', price: 0, included: true },
-      { id: 'pl-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 349, included: false },
-      { id: 'pl-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 89, included: false },
-      { id: 'pl-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 199, included: false },
-      { id: 'pl-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 49, included: false },
-      { id: 'pl-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 129, included: false },
-      { id: 'pl-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 79, included: false },
-      { id: 'pl-email-cadences', name: 'Email Cadences', description: 'Sequencias automatizadas de email', icon: 'Mail', price: 99, included: false },
-      { id: 'pl-instagram', name: 'Instagram', description: 'Integracao com Instagram para captacao', icon: 'Camera', price: 49, included: false },
-      { id: 'pl-piperhunt', name: 'PiperHunt Prospeccao B2B', description: 'Prospeccao automatizada de empresas', icon: 'Search', price: 199, included: false },
+      { id: 'pl-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 384, included: false },
+      { id: 'pl-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 98, included: false },
+      { id: 'pl-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 219, included: false },
+      { id: 'pl-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 54, included: false },
+      { id: 'pl-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 142, included: false },
+      { id: 'pl-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 87, included: false },
+      { id: 'pl-email-cadences', name: 'Email Cadences', description: 'Sequencias automatizadas de email', icon: 'Mail', price: 109, included: false },
+      { id: 'pl-instagram', name: 'Instagram', description: 'Integracao com Instagram para captacao', icon: 'Camera', price: 54, included: false },
+      { id: 'pl-piperhunt', name: 'PiperHunt Prospeccao B2B', description: 'Prospeccao automatizada de empresas', icon: 'Search', price: 219, included: false },
     ],
   },
 ]
@@ -172,6 +178,7 @@ export function calculatePrice(
   config?: PricingConfig,
 ): PriceBreakdown {
   const basePrice = config?.basePrices[product.id] ?? product.basePrice
+  const setupFee = config?.setupFees[product.id] ?? product.setupFee
 
   const tier = getUserTier(users)
   const tierIndex = USER_TIERS.indexOf(tier)
@@ -207,5 +214,6 @@ export function calculatePrice(
     periodDiscountAmount,
     total,
     totalAnnual,
+    setupFee,
   }
 }

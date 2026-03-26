@@ -5,7 +5,7 @@ import { formatCurrency, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { FileDown, RotateCcw } from 'lucide-react'
+import { FileDown, RotateCcw, Wrench } from 'lucide-react'
 
 interface PriceSummaryProps {
   product: Product
@@ -188,6 +188,29 @@ export function PriceSummary({
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Total anual estimado</span>
               <span className="text-foreground font-medium">{formatCurrency(breakdown.totalAnnual)}</span>
+            </div>
+          </div>
+
+          <Separator className="my-6" />
+
+          {/* Setup fee */}
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-secondary/50 border border-border/50">
+            <Wrench className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Taxa de implantacao</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Setup completo + treinamento da equipe (pagamento unico)
+                  </p>
+                </div>
+                <span
+                  className="text-lg font-display font-bold"
+                  style={{ color: product.color.primary }}
+                >
+                  {formatCurrency(breakdown.setupFee)}
+                </span>
+              </div>
             </div>
           </div>
         </div>

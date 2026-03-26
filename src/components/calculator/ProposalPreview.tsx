@@ -356,6 +356,38 @@ export function ProposalPreview({
             </span>
           </div>
         </div>
+
+        {/* Taxa de implantacao */}
+        <div
+          style={{
+            marginTop: '16px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '14px 16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: '#f9fafb',
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 600, fontSize: '13px', color: '#1f2937' }}>
+              Taxa de Implantacao (pagamento unico)
+            </div>
+            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+              Setup completo + treinamento da equipe
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: product.color.primary,
+            }}
+          >
+            {fmtCurrency(breakdown.setupFee)}
+          </span>
+        </div>
       </div>
 
       {/* O que esta incluso */}

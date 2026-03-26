@@ -18,6 +18,16 @@ export function PricingSettings() {
     setOpenSections(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
+  function handleSetupFee(productId: string, value: string) {
+    const num = parseFloat(value)
+    if (!isNaN(num)) {
+      setDraft(prev => ({
+        ...prev,
+        setupFees: { ...prev.setupFees, [productId]: num },
+      }))
+    }
+  }
+
   function handleBasePrice(productId: string, value: string) {
     const num = parseFloat(value)
     if (!isNaN(num)) {
@@ -78,6 +88,7 @@ export function PricingSettings() {
     resetConfig()
     setDraft({
       basePrices: Object.fromEntries(PRODUCTS.map(p => [p.id, p.basePrice])),
+      setupFees: Object.fromEntries(PRODUCTS.map(p => [p.id, p.setupFee])),
       modulePrices: Object.fromEntries(
         PRODUCTS.map(p => [
           p.id,
@@ -123,18 +134,32 @@ export function PricingSettings() {
 
             {isOpen && (
               <div className="px-5 pb-5 space-y-6">
-                {/* Base price */}
-                <div>
-                  <label className="text-sm font-medium text-foreground block mb-2">
-                    Preco base (R$/usuario/mes)
-                  </label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={draft.basePrices[product.id] ?? product.basePrice}
-                    onChange={(e) => handleBasePrice(product.id, e.target.value)}
-                    className="w-40"
-                  />
+                {/* Base price + Setup fee */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground block mb-2">
+                      Preco base (R$/usuario/mes)
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={draft.basePrices[product.id] ?? product.basePrice}
+                      onChange={(e) => handleBasePrice(product.id, e.target.value)}
+                      className="w-40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground block mb-2">
+                      Taxa de implantacao (R$)
+                    </label>
+                    <Input
+                      type="number"
+                      step="1"
+                      value={draft.setupFees[product.id] ?? product.setupFee}
+                      onChange={(e) => handleSetupFee(product.id, e.target.value)}
+                      className="w-40"
+                    />
+                  </div>
                 </div>
 
                 <Separator />

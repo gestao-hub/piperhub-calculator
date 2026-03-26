@@ -6,10 +6,12 @@ const STORAGE_KEY = 'piperhub-pricing-config'
 
 function getDefaultConfig(): PricingConfig {
   const basePrices: Record<string, number> = {}
+  const setupFees: Record<string, number> = {}
   const modulePrices: Record<string, Record<string, number>> = {}
 
   for (const product of PRODUCTS) {
     basePrices[product.id] = product.basePrice
+    setupFees[product.id] = product.setupFee
     modulePrices[product.id] = {}
     for (const mod of product.modules) {
       modulePrices[product.id][mod.id] = mod.price
@@ -22,7 +24,7 @@ function getDefaultConfig(): PricingConfig {
     periodDiscounts[p.id] = p.discount
   }
 
-  return { basePrices, modulePrices, tierDiscounts, periodDiscounts }
+  return { basePrices, setupFees, modulePrices, tierDiscounts, periodDiscounts }
 }
 
 function loadConfig(): PricingConfig {
