@@ -1,5 +1,5 @@
 import { PRODUCTS } from '@/lib/pricing-data'
-import { formatCurrency, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle } from 'lucide-react'
 
@@ -55,22 +55,9 @@ export function ProductSelector({ selectedProductId, onSelect }: ProductSelector
                 />
               </div>
 
-              <h3
-                className="text-xl font-display font-bold mb-1"
-                style={{ color: product.color.primary }}
-              >
-                {product.name}
-              </h3>
               <p className="text-sm text-muted-foreground mb-4">
                 {product.tagline}
               </p>
-
-              <div className="mb-4">
-                <span className="text-2xl font-display font-bold text-foreground">
-                  {formatCurrency(product.basePrice)}
-                </span>
-                <span className="text-sm text-muted-foreground">/usuario/mes</span>
-              </div>
 
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
