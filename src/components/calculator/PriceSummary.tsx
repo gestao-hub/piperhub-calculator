@@ -62,12 +62,7 @@ export function PriceSummary({
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
             <img src={product.logo} alt={product.name} className="h-10 w-auto" />
-            <div>
-              <h3 className="text-xl font-display font-bold" style={{ color: product.color.primary }}>
-                {product.name}
-              </h3>
-              <p className="text-sm text-muted-foreground">{product.tagline}</p>
-            </div>
+            <p className="text-sm text-muted-foreground">{product.tagline}</p>
           </div>
 
           <Separator className="mb-6" />
