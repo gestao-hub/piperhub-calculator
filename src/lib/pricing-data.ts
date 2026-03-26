@@ -47,12 +47,42 @@ export interface PriceBreakdown {
   discountedPerUser: number
   usersTotal: number
   addonsTotal: number
+  piperhuntCost: number
   subtotal: number
   periodDiscount: number
   periodDiscountAmount: number
   total: number
   totalAnnual: number
   setupFee: number
+}
+
+export interface PiperHuntTier {
+  min: number
+  max: number | null
+  label: string
+  pricePerCnpj: number
+  maxCost: number | null
+}
+
+export const PIPERHUNT_TIERS: PiperHuntTier[] = [
+  { min: 1, max: 100, label: '1-100 CNPJs', pricePerCnpj: 3.00, maxCost: 300 },
+  { min: 101, max: 500, label: '101-500 CNPJs', pricePerCnpj: 2.00, maxCost: 1000 },
+  { min: 501, max: 2000, label: '501-2.000 CNPJs', pricePerCnpj: 1.50, maxCost: 3000 },
+  { min: 2001, max: 5000, label: '2.001-5.000 CNPJs', pricePerCnpj: 1.00, maxCost: 5000 },
+  { min: 5001, max: null, label: '5.001+ CNPJs', pricePerCnpj: 0.70, maxCost: null },
+]
+
+export function getPiperHuntTier(cnpjs: number): PiperHuntTier {
+  for (const tier of PIPERHUNT_TIERS) {
+    if (tier.max === null && cnpjs >= tier.min) return tier
+    if (tier.max !== null && cnpjs >= tier.min && cnpjs <= tier.max) return tier
+  }
+  return PIPERHUNT_TIERS[0]
+}
+
+export function calculatePiperHuntCost(cnpjs: number): number {
+  const tier = getPiperHuntTier(cnpjs)
+  return cnpjs * tier.pricePerCnpj
 }
 
 export const USER_TIERS: UserTier[] = [
@@ -161,7 +191,7 @@ export const PRODUCTS: Product[] = [
       { id: 'pl-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 87, included: false },
       { id: 'pl-email-cadences', name: 'Email Cadences', description: 'Sequencias automatizadas de email', icon: 'Mail', price: 109, included: false },
       { id: 'pl-instagram', name: 'Instagram', description: 'Integracao com Instagram para captacao', icon: 'Camera', price: 54, included: false },
-      { id: 'pl-piperhunt', name: 'PiperHunt Prospeccao B2B', description: 'Prospeccao automatizada de empresas', icon: 'Search', price: 219, included: false },
+      { id: 'pl-piperhunt', name: 'PiperHunt', description: 'Prospeccao B2B - cobranca por CNPJ consultado', icon: 'Search', price: 0, included: false },
     ],
   },
 ]
@@ -180,6 +210,7 @@ export function calculatePrice(
   users: number,
   periodId: string,
   config?: PricingConfig,
+  piperhuntCnpjs?: number,
 ): PriceBreakdown {
   const basePrice = config?.basePrices[product.id] ?? product.basePrice
   const setupFee = config?.setupFees[product.id] ?? product.setupFee
@@ -194,12 +225,19 @@ export function calculatePrice(
   let addonsTotal = 0
   for (const mod of product.modules) {
     if (!mod.included && selectedModuleIds.includes(mod.id)) {
+      // PiperHunt is credit-based, skip from flat addon total
+      if (mod.id === 'pl-piperhunt') continue
       const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
       addonsTotal += modPrice
     }
   }
 
-  const subtotal = usersTotal + addonsTotal
+  let piperhuntCost = 0
+  if (selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs && piperhuntCnpjs > 0) {
+    piperhuntCost = calculatePiperHuntCost(piperhuntCnpjs)
+  }
+
+  const subtotal = usersTotal + addonsTotal + piperhuntCost
 
   const periodData = PERIOD_DISCOUNTS.find(p => p.id === periodId) ?? PERIOD_DISCOUNTS[0]
   const periodDiscount = config?.periodDiscounts[periodData.id] ?? periodData.discount
@@ -213,6 +251,7 @@ export function calculatePrice(
     discountedPerUser,
     usersTotal,
     addonsTotal,
+    piperhuntCost,
     subtotal,
     periodDiscount,
     periodDiscountAmount,

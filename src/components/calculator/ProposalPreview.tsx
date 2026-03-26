@@ -1,5 +1,5 @@
 import type { Product, PricingConfig } from '@/lib/pricing-data'
-import { calculatePrice, getUserTier, PERIOD_DISCOUNTS } from '@/lib/pricing-data'
+import { calculatePrice, getUserTier, PERIOD_DISCOUNTS, PIPERHUNT_TIERS, getPiperHuntTier } from '@/lib/pricing-data'
 
 interface ProposalPreviewProps {
   product: Product
@@ -7,6 +7,7 @@ interface ProposalPreviewProps {
   users: number
   period: string
   config?: PricingConfig
+  piperhuntCnpjs?: number
 }
 
 function fmtCurrency(value: number): string {
@@ -19,8 +20,9 @@ export function ProposalPreview({
   users,
   period,
   config,
+  piperhuntCnpjs = 0,
 }: ProposalPreviewProps) {
-  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config)
+  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
   const tier = getUserTier(users)
   const periodData = PERIOD_DISCOUNTS.find(p => p.id === period) ?? PERIOD_DISCOUNTS[0]
   const today = new Date().toLocaleDateString('pt-BR', {
@@ -28,6 +30,9 @@ export function ProposalPreview({
     month: 'long',
     year: 'numeric',
   })
+
+  const isPiperhuntSelected = selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
+  const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
 
   const allModules = product.modules.filter(
     m => m.included || selectedModuleIds.includes(m.id)
@@ -172,7 +177,14 @@ export function ProposalPreview({
           </thead>
           <tbody>
             {allModules.map((mod, idx) => {
-              const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
+              const isPiperhunt = mod.id === 'pl-piperhunt'
+              const modPrice = isPiperhunt
+                ? breakdown.piperhuntCost
+                : (config?.modulePrices[product.id]?.[mod.id] ?? mod.price)
+              const modLabel = isPiperhunt && isPiperhuntSelected
+                ? `PiperHunt (${piperhuntCnpjs} CNPJs)`
+                : mod.name
+
               return (
                 <tr
                   key={mod.id}
@@ -187,7 +199,7 @@ export function ProposalPreview({
                       color: '#1f2937',
                     }}
                   >
-                    {mod.name}
+                    {modLabel}
                   </td>
                   <td
                     style={{
@@ -207,7 +219,7 @@ export function ProposalPreview({
                         color: mod.included ? '#166534' : product.color.primary,
                       }}
                     >
-                      {mod.included ? 'Incluso' : 'Add-on'}
+                      {mod.included ? 'Incluso' : isPiperhunt ? 'Creditos' : 'Add-on'}
                     </span>
                   </td>
                   <td
@@ -309,6 +321,23 @@ export function ProposalPreview({
               {fmtCurrency(breakdown.addonsTotal)}
             </span>
           </div>
+          {isPiperhuntSelected && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '10px 16px',
+                borderBottom: '1px solid #e5e7eb',
+              }}
+            >
+              <span style={{ color: '#6b7280' }}>
+                PiperHunt ({piperhuntCnpjs} CNPJs x {fmtCurrency(piperhuntTier?.pricePerCnpj ?? 0)})
+              </span>
+              <span style={{ fontWeight: 500 }}>
+                {fmtCurrency(breakdown.piperhuntCost)}
+              </span>
+            </div>
+          )}
           {breakdown.periodDiscount > 0 && (
             <div
               style={{
@@ -389,6 +418,147 @@ export function ProposalPreview({
           </span>
         </div>
       </div>
+
+      {/* PiperHunt Credit Table */}
+      {isPiperhuntSelected && (
+        <div style={{ padding: '0 32px 24px' }}>
+          <h3
+            style={{
+              fontSize: '16px',
+              fontWeight: 600,
+              marginBottom: '16px',
+              color: '#1a1a2e',
+              fontFamily: 'Outfit, Inter, Arial, sans-serif',
+            }}
+          >
+            PiperHunt - Tabela de Creditos
+          </h3>
+
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '12px',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+            }}
+          >
+            <thead>
+              <tr>
+                <th
+                  style={{
+                    textAlign: 'left',
+                    padding: '10px 12px',
+                    backgroundColor: '#f3f4f6',
+                    borderBottom: '2px solid #e5e7eb',
+                    fontWeight: 600,
+                    color: '#374151',
+                  }}
+                >
+                  Faixa
+                </th>
+                <th
+                  style={{
+                    textAlign: 'right',
+                    padding: '10px 12px',
+                    backgroundColor: '#f3f4f6',
+                    borderBottom: '2px solid #e5e7eb',
+                    fontWeight: 600,
+                    color: '#374151',
+                  }}
+                >
+                  Preco/CNPJ
+                </th>
+                <th
+                  style={{
+                    textAlign: 'right',
+                    padding: '10px 12px',
+                    backgroundColor: '#f3f4f6',
+                    borderBottom: '2px solid #e5e7eb',
+                    fontWeight: 600,
+                    color: '#374151',
+                  }}
+                >
+                  Custo maximo
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {PIPERHUNT_TIERS.map((t) => {
+                const isActive = piperhuntTier !== null && t.min === piperhuntTier.min
+                return (
+                  <tr
+                    key={t.label}
+                    style={{
+                      backgroundColor: isActive ? `${product.color.primary}15` : '#ffffff',
+                    }}
+                  >
+                    <td
+                      style={{
+                        padding: '8px 12px',
+                        borderBottom: '1px solid #e5e7eb',
+                        color: '#1f2937',
+                        fontWeight: isActive ? 700 : 400,
+                      }}
+                    >
+                      {t.label}
+                      {isActive && (
+                        <span
+                          style={{
+                            marginLeft: '8px',
+                            display: 'inline-block',
+                            padding: '1px 8px',
+                            borderRadius: '10px',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            backgroundColor: `${product.color.primary}25`,
+                            color: product.color.primary,
+                          }}
+                        >
+                          SELECIONADO
+                        </span>
+                      )}
+                    </td>
+                    <td
+                      style={{
+                        padding: '8px 12px',
+                        borderBottom: '1px solid #e5e7eb',
+                        textAlign: 'right',
+                        fontWeight: isActive ? 700 : 500,
+                        color: '#1f2937',
+                      }}
+                    >
+                      {fmtCurrency(t.pricePerCnpj)}
+                    </td>
+                    <td
+                      style={{
+                        padding: '8px 12px',
+                        borderBottom: '1px solid #e5e7eb',
+                        textAlign: 'right',
+                        fontWeight: isActive ? 700 : 500,
+                        color: '#1f2937',
+                      }}
+                    >
+                      {t.maxCost !== null ? fmtCurrency(t.maxCost) : 'Sob consulta'}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          <div
+            style={{
+              marginTop: '10px',
+              fontSize: '11px',
+              color: '#6b7280',
+              fontStyle: 'italic',
+            }}
+          >
+            Cobrado conforme consumo mensal de CNPJs consultados.
+          </div>
+        </div>
+      )}
 
       {/* O que esta incluso */}
       <div style={{ padding: '0 32px 24px' }}>

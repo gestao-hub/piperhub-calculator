@@ -1,6 +1,5 @@
-import type { Product } from '@/lib/pricing-data'
-import { PRODUCTS, PERIOD_DISCOUNTS, calculatePrice, getUserTier } from '@/lib/pricing-data'
-import type { PricingConfig } from '@/lib/pricing-data'
+import type { Product, PricingConfig } from '@/lib/pricing-data'
+import { PRODUCTS, PERIOD_DISCOUNTS, calculatePrice, getUserTier, getPiperHuntTier } from '@/lib/pricing-data'
 import { formatCurrency, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -16,6 +15,7 @@ interface PriceSummaryProps {
   onExportPDF: () => void
   onReset: () => void
   config?: PricingConfig
+  piperhuntCnpjs?: number
 }
 
 export function PriceSummary({
@@ -27,9 +27,13 @@ export function PriceSummary({
   onExportPDF,
   onReset,
   config,
+  piperhuntCnpjs = 0,
 }: PriceSummaryProps) {
-  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config)
+  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
   const tier = getUserTier(users)
+  const isPiperhuntSelected = selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
+  const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
+
   const selectedAddons = product.modules.filter(
     m => !m.included && selectedModuleIds.includes(m.id)
   )
@@ -102,6 +106,21 @@ export function PriceSummary({
                   Add-ons
                 </p>
                 {selectedAddons.map((mod) => {
+                  const isPiperhunt = mod.id === 'pl-piperhunt'
+
+                  if (isPiperhunt && isPiperhuntSelected && piperhuntTier) {
+                    return (
+                      <div key={mod.id} className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">
+                          PiperHunt ({piperhuntCnpjs} CNPJs x {formatCurrency(piperhuntTier.pricePerCnpj)})
+                        </span>
+                        <span className="text-sm font-medium text-foreground">
+                          {formatCurrency(breakdown.piperhuntCost)}
+                        </span>
+                      </div>
+                    )
+                  }
+
                   const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
                   return (
                     <div key={mod.id} className="flex justify-between items-center">
@@ -115,7 +134,7 @@ export function PriceSummary({
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-muted-foreground">Total add-ons</span>
                   <span className="text-sm font-medium text-foreground">
-                    {formatCurrency(breakdown.addonsTotal)}
+                    {formatCurrency(breakdown.addonsTotal + breakdown.piperhuntCost)}
                   </span>
                 </div>
               </>
@@ -213,6 +232,16 @@ export function PriceSummary({
               </div>
             </div>
           </div>
+
+          {/* PiperHunt credit note */}
+          {isPiperhuntSelected && (
+            <div className="mt-4 p-3 rounded-lg border border-border/50 bg-secondary/30">
+              <p className="text-xs text-muted-foreground">
+                * PiperHunt: cobrado conforme consumo mensal de CNPJs consultados.
+                Faixa atual: {piperhuntTier?.label} ({formatCurrency(piperhuntTier?.pricePerCnpj ?? 0)}/CNPJ).
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Action buttons */}
