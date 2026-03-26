@@ -4,7 +4,7 @@ import { formatCurrency, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { FileDown, RotateCcw, Wrench } from 'lucide-react'
+import { FileDown, RotateCcw, Wrench, Building2 } from 'lucide-react'
 
 interface PriceSummaryProps {
   product: Product
@@ -16,6 +16,8 @@ interface PriceSummaryProps {
   onReset: () => void
   config?: PricingConfig
   piperhuntCnpjs?: number
+  companyName: string
+  onChangeCompanyName: (name: string) => void
 }
 
 export function PriceSummary({
@@ -28,6 +30,8 @@ export function PriceSummary({
   onReset,
   config,
   piperhuntCnpjs = 0,
+  companyName,
+  onChangeCompanyName,
 }: PriceSummaryProps) {
   const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
   const tier = getUserTier(users)
@@ -242,6 +246,23 @@ export function PriceSummary({
               </p>
             </div>
           )}
+        </div>
+
+        {/* Client data section */}
+        <div className="glass-card rounded-xl p-6 mb-6">
+          <h4 className="text-sm font-semibold text-foreground mb-4">Dados do cliente</h4>
+          <div className="relative">
+            <Building2
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
+            />
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => onChangeCompanyName(e.target.value)}
+              placeholder="Digite o nome da empresa..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            />
+          </div>
         </div>
 
         {/* Action buttons */}

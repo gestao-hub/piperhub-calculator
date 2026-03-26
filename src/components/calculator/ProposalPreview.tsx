@@ -8,6 +8,7 @@ interface ProposalPreviewProps {
   period: string
   config?: PricingConfig
   piperhuntCnpjs?: number
+  companyName?: string
 }
 
 function fmtCurrency(value: number): string {
@@ -21,6 +22,7 @@ export function ProposalPreview({
   period,
   config,
   piperhuntCnpjs = 0,
+  companyName,
 }: ProposalPreviewProps) {
   const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
   const tier = getUserTier(users)
@@ -44,7 +46,13 @@ export function ProposalPreview({
     'Atualizacoes inclusas',
     'Setup e treinamento',
     'Sem fidelidade',
+    'Onboarding dedicado',
   ]
+
+  // Derive a lighter tint from the primary color for accents
+  const primaryColor = product.color.primary
+  const primaryLight = `${primaryColor}12`
+  const primaryMedium = `${primaryColor}20`
 
   return (
     <div
@@ -62,38 +70,78 @@ export function ProposalPreview({
         lineHeight: '1.5',
       }}
     >
-      {/* Header bar */}
+      {/* ==================== HEADER BAR ==================== */}
       <div
         style={{
-          backgroundColor: product.color.primary,
+          backgroundColor: primaryColor,
+          padding: '32px 32px 28px',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: '24px',
+                fontWeight: 800,
+                color: '#ffffff',
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+              }}
+            >
+              Proposta Comercial
+            </div>
+            <div
+              style={{
+                fontSize: '13px',
+                color: 'rgba(255,255,255,0.7)',
+                marginTop: '4px',
+                fontWeight: 400,
+              }}
+            >
+              {product.name} - Solucao completa
+            </div>
+          </div>
+          <div
+            style={{
+              textAlign: 'right',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '12px',
+                color: 'rgba(255,255,255,0.85)',
+                fontWeight: 500,
+              }}
+            >
+              {today}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== LOGO + CLIENT SECTION ==================== */}
+      <div
+        style={{
           padding: '24px 32px',
+          borderBottom: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
       >
-        <span
-          style={{
-            color: '#ffffff',
-            fontSize: '22px',
-            fontWeight: 700,
-            fontFamily: 'Outfit, Inter, Arial, sans-serif',
-          }}
-        >
-          Proposta Comercial
-        </span>
-        <span style={{ color: '#ffffffcc', fontSize: '12px' }}>
-          {today}
-        </span>
-      </div>
-
-      {/* Logo section */}
-      <div style={{ padding: '24px 32px', borderBottom: '1px solid #e5e7eb' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <img
             src={product.logoLight}
             alt={product.name}
-            style={{ height: '40px', width: 'auto' }}
+            style={{ height: '42px', width: 'auto' }}
             crossOrigin="anonymous"
           />
           <div>
@@ -101,28 +149,56 @@ export function ProposalPreview({
               style={{
                 fontSize: '20px',
                 fontWeight: 700,
-                color: product.color.primary,
+                color: primaryColor,
                 fontFamily: 'Outfit, Inter, Arial, sans-serif',
               }}
             >
               {product.name}
             </div>
-            <div style={{ fontSize: '13px', color: '#6b7280' }}>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '1px' }}>
               {product.tagline}
             </div>
           </div>
         </div>
+        {companyName && companyName.trim() !== '' && (
+          <div style={{ textAlign: 'right' }}>
+            <div
+              style={{
+                fontSize: '10px',
+                color: '#9ca3af',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: 600,
+                marginBottom: '4px',
+              }}
+            >
+              Preparado para
+            </div>
+            <div
+              style={{
+                fontSize: '16px',
+                fontWeight: 700,
+                color: primaryColor,
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+              }}
+            >
+              {companyName}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Configuracao Selecionada */}
+      {/* ==================== MODULES TABLE ==================== */}
       <div style={{ padding: '24px 32px' }}>
         <h3
           style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            marginBottom: '16px',
+            fontSize: '15px',
+            fontWeight: 700,
+            marginBottom: '14px',
             color: '#1a1a2e',
             fontFamily: 'Outfit, Inter, Arial, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           }}
         >
           Configuracao Selecionada
@@ -133,6 +209,8 @@ export function ProposalPreview({
             width: '100%',
             borderCollapse: 'collapse',
             fontSize: '12px',
+            borderRadius: '8px',
+            overflow: 'hidden',
           }}
         >
           <thead>
@@ -140,38 +218,26 @@ export function ProposalPreview({
               <th
                 style={{
                   textAlign: 'left',
-                  padding: '10px 12px',
-                  backgroundColor: '#f3f4f6',
-                  borderBottom: '2px solid #e5e7eb',
+                  padding: '12px 16px',
+                  backgroundColor: primaryColor,
                   fontWeight: 600,
-                  color: '#374151',
+                  color: '#ffffff',
+                  fontSize: '12px',
                 }}
               >
                 Modulo
               </th>
               <th
                 style={{
-                  textAlign: 'center',
-                  padding: '10px 12px',
-                  backgroundColor: '#f3f4f6',
-                  borderBottom: '2px solid #e5e7eb',
-                  fontWeight: 600,
-                  color: '#374151',
-                }}
-              >
-                Status
-              </th>
-              <th
-                style={{
                   textAlign: 'right',
-                  padding: '10px 12px',
-                  backgroundColor: '#f3f4f6',
-                  borderBottom: '2px solid #e5e7eb',
+                  padding: '12px 16px',
+                  backgroundColor: primaryColor,
                   fontWeight: 600,
-                  color: '#374151',
+                  color: '#ffffff',
+                  fontSize: '12px',
                 }}
               >
-                Valor
+                Valor/mes
               </th>
             </tr>
           </thead>
@@ -189,49 +255,29 @@ export function ProposalPreview({
                 <tr
                   key={mod.id}
                   style={{
-                    backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb',
+                    backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8f9fb',
                   }}
                 >
                   <td
                     style={{
-                      padding: '8px 12px',
-                      borderBottom: '1px solid #e5e7eb',
+                      padding: '11px 16px',
+                      borderBottom: '1px solid #f0f1f3',
                       color: '#1f2937',
+                      fontWeight: 500,
                     }}
                   >
                     {modLabel}
                   </td>
                   <td
                     style={{
-                      padding: '8px 12px',
-                      borderBottom: '1px solid #e5e7eb',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '2px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        backgroundColor: `${product.color.primary}20`,
-                        color: product.color.primary,
-                      }}
-                    >
-                      {isPiperhunt ? 'Creditos' : 'Selecionado'}
-                    </span>
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px 12px',
-                      borderBottom: '1px solid #e5e7eb',
+                      padding: '11px 16px',
+                      borderBottom: '1px solid #f0f1f3',
                       textAlign: 'right',
-                      fontWeight: 500,
+                      fontWeight: 600,
                       color: '#1f2937',
                     }}
                   >
-                    {`${fmtCurrency(modPrice)}/mes`}
+                    {fmtCurrency(modPrice)}
                   </td>
                 </tr>
               )
@@ -240,15 +286,17 @@ export function ProposalPreview({
         </table>
       </div>
 
-      {/* Resumo Financeiro */}
+      {/* ==================== FINANCIAL SUMMARY ==================== */}
       <div style={{ padding: '0 32px 24px' }}>
         <h3
           style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            marginBottom: '16px',
+            fontSize: '15px',
+            fontWeight: 700,
+            marginBottom: '14px',
             color: '#1a1a2e',
             fontFamily: 'Outfit, Inter, Arial, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           }}
         >
           Resumo Financeiro
@@ -257,161 +305,205 @@ export function ProposalPreview({
         <div
           style={{
             border: '1px solid #e5e7eb',
-            borderRadius: '8px',
+            borderRadius: '12px',
             overflow: 'hidden',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
           }}
         >
+          {/* Users row */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              padding: '10px 16px',
-              borderBottom: '1px solid #e5e7eb',
+              padding: '12px 20px',
+              borderBottom: '1px solid #f0f1f3',
+              backgroundColor: '#ffffff',
             }}
           >
-            <span style={{ color: '#6b7280' }}>Usuarios</span>
-            <span style={{ fontWeight: 600 }}>
+            <span style={{ color: '#6b7280', fontSize: '12px' }}>Usuarios</span>
+            <span style={{ fontWeight: 600, fontSize: '12px', color: '#1f2937' }}>
               {users} ({tier.label})
             </span>
           </div>
+
+          {/* Base row */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              padding: '10px 16px',
-              borderBottom: '1px solid #e5e7eb',
-              backgroundColor: '#f9fafb',
+              padding: '12px 20px',
+              borderBottom: '1px solid #f0f1f3',
+              backgroundColor: '#fafbfc',
             }}
           >
-            <span style={{ color: '#6b7280' }}>
+            <span style={{ color: '#6b7280', fontSize: '12px' }}>
               Base ({users} x {fmtCurrency(breakdown.basePerUser)})
             </span>
-            <span style={{ fontWeight: 500 }}>
+            <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
               {fmtCurrency(breakdown.basePerUser * users)}
             </span>
           </div>
+
+          {/* Volume discount */}
           {breakdown.discountPercent > 0 && (
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                padding: '10px 16px',
-                borderBottom: '1px solid #e5e7eb',
+                padding: '12px 20px',
+                borderBottom: '1px solid #f0f1f3',
+                backgroundColor: '#ffffff',
               }}
             >
-              <span style={{ color: '#6b7280' }}>
+              <span style={{ color: '#6b7280', fontSize: '12px' }}>
                 Desconto volume (-{(breakdown.discountPercent * 100).toFixed(0)}%)
               </span>
-              <span style={{ fontWeight: 500, color: '#16a34a' }}>
+              <span style={{ fontWeight: 600, color: '#16a34a', fontSize: '12px' }}>
                 -{fmtCurrency(breakdown.basePerUser * users - breakdown.usersTotal)}
               </span>
             </div>
           )}
+
+          {/* Modules total */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              padding: '10px 16px',
-              borderBottom: '1px solid #e5e7eb',
-              backgroundColor: '#f9fafb',
+              padding: '12px 20px',
+              borderBottom: '1px solid #f0f1f3',
+              backgroundColor: '#fafbfc',
             }}
           >
-            <span style={{ color: '#6b7280' }}>Total modulos selecionados</span>
-            <span style={{ fontWeight: 500 }}>
+            <span style={{ color: '#6b7280', fontSize: '12px' }}>Total modulos selecionados</span>
+            <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
               {fmtCurrency(breakdown.addonsTotal)}
             </span>
           </div>
+
+          {/* PiperHunt line */}
           {isPiperhuntSelected && (
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                padding: '10px 16px',
-                borderBottom: '1px solid #e5e7eb',
+                padding: '12px 20px',
+                borderBottom: '1px solid #f0f1f3',
+                backgroundColor: '#ffffff',
               }}
             >
-              <span style={{ color: '#6b7280' }}>
+              <span style={{ color: '#6b7280', fontSize: '12px' }}>
                 PiperHunt ({piperhuntCnpjs} CNPJs x {fmtCurrency(piperhuntTier?.pricePerCnpj ?? 0)})
               </span>
-              <span style={{ fontWeight: 500 }}>
+              <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
                 {fmtCurrency(breakdown.piperhuntCost)}
               </span>
             </div>
           )}
+
+          {/* Period discount */}
           {breakdown.periodDiscount > 0 && (
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                padding: '10px 16px',
-                borderBottom: '1px solid #e5e7eb',
+                padding: '12px 20px',
+                borderBottom: '1px solid #f0f1f3',
+                backgroundColor: '#fafbfc',
               }}
             >
-              <span style={{ color: '#6b7280' }}>
+              <span style={{ color: '#6b7280', fontSize: '12px' }}>
                 Desconto {periodData.label} (-{(breakdown.periodDiscount * 100).toFixed(0)}%)
               </span>
-              <span style={{ fontWeight: 500, color: '#16a34a' }}>
+              <span style={{ fontWeight: 600, color: '#16a34a', fontSize: '12px' }}>
                 -{fmtCurrency(breakdown.periodDiscountAmount)}
               </span>
             </div>
           )}
+
+          {/* TOTAL MENSAL - prominent */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              padding: '16px',
-              backgroundColor: product.color.primary,
+              alignItems: 'center',
+              padding: '18px 20px',
+              backgroundColor: primaryColor,
               color: '#ffffff',
             }}
           >
-            <span style={{ fontSize: '16px', fontWeight: 700 }}>
+            <span
+              style={{
+                fontSize: '17px',
+                fontWeight: 800,
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+                letterSpacing: '0.3px',
+              }}
+            >
               TOTAL MENSAL
             </span>
-            <span style={{ fontSize: '20px', fontWeight: 700 }}>
+            <span
+              style={{
+                fontSize: '22px',
+                fontWeight: 800,
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+              }}
+            >
               {fmtCurrency(breakdown.total)}
             </span>
           </div>
+
+          {/* Total anual */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              padding: '10px 16px',
-              backgroundColor: '#f9fafb',
+              padding: '12px 20px',
+              backgroundColor: primaryLight,
             }}
           >
-            <span style={{ color: '#6b7280' }}>Total anual estimado</span>
-            <span style={{ fontWeight: 600 }}>
+            <span style={{ color: '#6b7280', fontSize: '12px', fontWeight: 500 }}>
+              Total anual estimado
+            </span>
+            <span style={{ fontWeight: 700, fontSize: '13px', color: primaryColor }}>
               {fmtCurrency(breakdown.totalAnnual)}
             </span>
           </div>
         </div>
 
-        {/* Taxa de implantacao */}
+        {/* Setup fee - separate highlight box */}
         <div
           style={{
             marginTop: '16px',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '14px 16px',
+            border: `2px solid ${primaryMedium}`,
+            borderRadius: '12px',
+            padding: '16px 20px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            backgroundColor: '#f9fafb',
+            backgroundColor: primaryLight,
           }}
         >
           <div>
-            <div style={{ fontWeight: 600, fontSize: '13px', color: '#1f2937' }}>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: '13px',
+                color: '#1f2937',
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+              }}
+            >
               Taxa de Implantacao (pagamento unico)
             </div>
-            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '3px' }}>
               Setup completo + treinamento da equipe
             </div>
           </div>
           <span
             style={{
-              fontSize: '18px',
-              fontWeight: 700,
-              color: product.color.primary,
+              fontSize: '20px',
+              fontWeight: 800,
+              color: primaryColor,
+              fontFamily: 'Outfit, Inter, Arial, sans-serif',
             }}
           >
             {fmtCurrency(breakdown.setupFee)}
@@ -419,16 +511,18 @@ export function ProposalPreview({
         </div>
       </div>
 
-      {/* PiperHunt Credit Table */}
+      {/* ==================== PIPERHUNT CREDIT TABLE ==================== */}
       {isPiperhuntSelected && (
         <div style={{ padding: '0 32px 24px' }}>
           <h3
             style={{
-              fontSize: '16px',
-              fontWeight: 600,
-              marginBottom: '16px',
+              fontSize: '15px',
+              fontWeight: 700,
+              marginBottom: '14px',
               color: '#1a1a2e',
               fontFamily: 'Outfit, Inter, Arial, sans-serif',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
             }}
           >
             PiperHunt - Tabela de Creditos
@@ -439,8 +533,9 @@ export function ProposalPreview({
               width: '100%',
               borderCollapse: 'collapse',
               fontSize: '12px',
-              border: '1px solid #e5e7eb',
               borderRadius: '8px',
+              overflow: 'hidden',
+              border: '1px solid #e5e7eb',
             }}
           >
             <thead>
@@ -448,11 +543,11 @@ export function ProposalPreview({
                 <th
                   style={{
                     textAlign: 'left',
-                    padding: '10px 12px',
-                    backgroundColor: '#f3f4f6',
-                    borderBottom: '2px solid #e5e7eb',
+                    padding: '12px 16px',
+                    backgroundColor: primaryColor,
                     fontWeight: 600,
-                    color: '#374151',
+                    color: '#ffffff',
+                    fontSize: '12px',
                   }}
                 >
                   Faixa
@@ -460,11 +555,11 @@ export function ProposalPreview({
                 <th
                   style={{
                     textAlign: 'right',
-                    padding: '10px 12px',
-                    backgroundColor: '#f3f4f6',
-                    borderBottom: '2px solid #e5e7eb',
+                    padding: '12px 16px',
+                    backgroundColor: primaryColor,
                     fontWeight: 600,
-                    color: '#374151',
+                    color: '#ffffff',
+                    fontSize: '12px',
                   }}
                 >
                   Preco/CNPJ
@@ -472,11 +567,11 @@ export function ProposalPreview({
                 <th
                   style={{
                     textAlign: 'right',
-                    padding: '10px 12px',
-                    backgroundColor: '#f3f4f6',
-                    borderBottom: '2px solid #e5e7eb',
+                    padding: '12px 16px',
+                    backgroundColor: primaryColor,
                     fontWeight: 600,
-                    color: '#374151',
+                    color: '#ffffff',
+                    fontSize: '12px',
                   }}
                 >
                   Custo maximo
@@ -490,13 +585,13 @@ export function ProposalPreview({
                   <tr
                     key={t.label}
                     style={{
-                      backgroundColor: isActive ? `${product.color.primary}15` : '#ffffff',
+                      backgroundColor: isActive ? primaryLight : '#ffffff',
                     }}
                   >
                     <td
                       style={{
-                        padding: '8px 12px',
-                        borderBottom: '1px solid #e5e7eb',
+                        padding: '10px 16px',
+                        borderBottom: '1px solid #f0f1f3',
                         color: '#1f2937',
                         fontWeight: isActive ? 700 : 400,
                       }}
@@ -507,12 +602,12 @@ export function ProposalPreview({
                           style={{
                             marginLeft: '8px',
                             display: 'inline-block',
-                            padding: '1px 8px',
+                            padding: '2px 10px',
                             borderRadius: '10px',
                             fontSize: '10px',
                             fontWeight: 700,
-                            backgroundColor: `${product.color.primary}25`,
-                            color: product.color.primary,
+                            backgroundColor: primaryMedium,
+                            color: primaryColor,
                           }}
                         >
                           SELECIONADO
@@ -521,8 +616,8 @@ export function ProposalPreview({
                     </td>
                     <td
                       style={{
-                        padding: '8px 12px',
-                        borderBottom: '1px solid #e5e7eb',
+                        padding: '10px 16px',
+                        borderBottom: '1px solid #f0f1f3',
                         textAlign: 'right',
                         fontWeight: isActive ? 700 : 500,
                         color: '#1f2937',
@@ -532,8 +627,8 @@ export function ProposalPreview({
                     </td>
                     <td
                       style={{
-                        padding: '8px 12px',
-                        borderBottom: '1px solid #e5e7eb',
+                        padding: '10px 16px',
+                        borderBottom: '1px solid #f0f1f3',
                         textAlign: 'right',
                         fontWeight: isActive ? 700 : 500,
                         color: '#1f2937',
@@ -560,54 +655,90 @@ export function ProposalPreview({
         </div>
       )}
 
-      {/* O que esta incluso */}
+      {/* ==================== BENEFITS - 2 COLUMN GRID ==================== */}
       <div style={{ padding: '0 32px 24px' }}>
         <h3
           style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            marginBottom: '12px',
+            fontSize: '15px',
+            fontWeight: 700,
+            marginBottom: '14px',
             color: '#1a1a2e',
             fontFamily: 'Outfit, Inter, Arial, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           }}
         >
           O que esta incluso
         </h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '10px',
+          }}
+        >
           {benefits.map((benefit) => (
-            <span
+            <div
               key={benefit}
               style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: '20px',
-                backgroundColor: '#f0fdf4',
-                color: '#166534',
-                fontSize: '11px',
-                fontWeight: 500,
+                gap: '10px',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                backgroundColor: '#fafbfc',
+                borderLeft: '3px solid #16a34a',
               }}
             >
-              &#10003; {benefit}
-            </span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: '#dcfce7',
+                  color: '#16a34a',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  flexShrink: 0,
+                }}
+              >
+                &#10003;
+              </span>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: '#374151',
+                }}
+              >
+                {benefit}
+              </span>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Footer */}
+      {/* ==================== FOOTER ==================== */}
       <div
         style={{
-          backgroundColor: '#f3f4f6',
-          padding: '16px 32px',
-          textAlign: 'center',
+          padding: '20px 32px 16px',
           marginTop: 'auto',
-          borderTop: '1px solid #e5e7eb',
         }}
       >
-        <span style={{ fontSize: '11px', color: '#9ca3af' }}>
-          PiperHub | piperhub.io | Proposta valida por 30 dias
-        </span>
+        <div
+          style={{
+            borderTop: '1px solid #e5e7eb',
+            paddingTop: '14px',
+            textAlign: 'center',
+          }}
+        >
+          <span style={{ fontSize: '10px', color: '#b0b5be', fontWeight: 400 }}>
+            PiperHub | Proposta valida por 30 dias
+          </span>
+        </div>
       </div>
     </div>
   )

@@ -30,6 +30,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
   const [users, setUsers] = useState(5)
   const [period, setPeriod] = useState('monthly')
   const [piperhuntCnpjs, setPiperhuntCnpjs] = useState(200)
+  const [companyName, setCompanyName] = useState('')
   const { config } = usePricingConfig()
 
   const selectedProduct: Product | undefined = PRODUCTS.find(p => p.id === selectedProductId)
@@ -60,6 +61,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
     setUsers(5)
     setPeriod('monthly')
     setPiperhuntCnpjs(200)
+    setCompanyName('')
   }, [])
 
   const canProceed =
@@ -172,6 +174,8 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
             onReset={handleReset}
             config={config}
             piperhuntCnpjs={piperhuntCnpjs}
+            companyName={companyName}
+            onChangeCompanyName={setCompanyName}
           />
         )}
       </div>
@@ -212,6 +216,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
           period={period}
           config={config}
           piperhuntCnpjs={piperhuntCnpjs}
+          companyName={companyName}
         />
       )}
     </div>
