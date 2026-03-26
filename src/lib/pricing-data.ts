@@ -1,0 +1,211 @@
+export interface Module {
+  id: string
+  name: string
+  description: string
+  icon: string
+  price: number
+  included: boolean
+}
+
+export interface Product {
+  id: 'piperkey' | 'pipercore' | 'piperleads2'
+  name: string
+  tagline: string
+  basePrice: number
+  color: { primary: string; secondary: string; bg: string; border: string; text: string }
+  logo: string
+  modules: Module[]
+}
+
+export interface UserTier {
+  min: number
+  max: number | null
+  label: string
+  discount: number
+}
+
+export interface PeriodDiscount {
+  id: string
+  label: string
+  months: number
+  discount: number
+}
+
+export interface PricingConfig {
+  basePrices: Record<string, number>
+  modulePrices: Record<string, Record<string, number>>
+  tierDiscounts: number[]
+  periodDiscounts: Record<string, number>
+}
+
+export interface PriceBreakdown {
+  basePerUser: number
+  discountPercent: number
+  discountedPerUser: number
+  usersTotal: number
+  addonsTotal: number
+  subtotal: number
+  periodDiscount: number
+  periodDiscountAmount: number
+  total: number
+  totalAnnual: number
+}
+
+export const USER_TIERS: UserTier[] = [
+  { min: 1, max: 5, label: '1-5 usuarios', discount: 0 },
+  { min: 6, max: 15, label: '6-15 usuarios', discount: 0.10 },
+  { min: 16, max: 30, label: '16-30 usuarios', discount: 0.15 },
+  { min: 31, max: 50, label: '31-50 usuarios', discount: 0.20 },
+  { min: 51, max: null, label: '51+ usuarios', discount: 0.25 },
+]
+
+export const PERIOD_DISCOUNTS: PeriodDiscount[] = [
+  { id: 'monthly', label: 'Mensal', months: 1, discount: 0 },
+  { id: 'semiannual', label: 'Semestral', months: 6, discount: 0.10 },
+  { id: 'annual', label: 'Anual', months: 12, discount: 0.15 },
+]
+
+export const PRODUCTS: Product[] = [
+  {
+    id: 'piperkey',
+    name: 'PiperKey',
+    tagline: 'CRM Imobiliario com IA',
+    basePrice: 89,
+    color: {
+      primary: '#2B7FD9',
+      secondary: '#D4A920',
+      bg: 'from-blue-500/15 to-amber-500/10',
+      border: 'border-blue-500/40',
+      text: 'text-blue-400',
+    },
+    logo: '/pipercore-logo.png',
+    modules: [
+      { id: 'pk-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
+      { id: 'pk-agenda', name: 'Agenda', description: 'Agendamento de visitas e reunioes', icon: 'Calendar', price: 0, included: true },
+      { id: 'pk-monitoramento', name: 'Monitoramento', description: 'Monitoramento de atividades e equipe', icon: 'Eye', price: 0, included: true },
+      { id: 'pk-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
+      { id: 'pk-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
+      { id: 'pk-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 349, included: false },
+      { id: 'pk-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 89, included: false },
+      { id: 'pk-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 199, included: false },
+      { id: 'pk-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 49, included: false },
+      { id: 'pk-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 129, included: false },
+      { id: 'pk-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 79, included: false },
+      { id: 'pk-analise-mercado', name: 'Analise de Mercado', description: 'Inteligencia de mercado imobiliario', icon: 'Globe', price: 149, included: false },
+      { id: 'pk-pipeline-financeiro', name: 'Pipeline Financeiro', description: 'Gestao de pipeline financeiro', icon: 'DollarSign', price: 99, included: false },
+      { id: 'pk-pos-venda', name: 'Pos-Venda', description: 'Gestao do pos-venda e entrega', icon: 'Package', price: 99, included: false },
+      { id: 'pk-gestao-aluguel', name: 'Gestao de Aluguel', description: 'Administracao de imoveis para aluguel', icon: 'Home', price: 149, included: false },
+      { id: 'pk-propriedades', name: 'Propriedades', description: 'Catalogo e gestao de propriedades', icon: 'Building', price: 79, included: false },
+    ],
+  },
+  {
+    id: 'pipercore',
+    name: 'PiperCore',
+    tagline: 'CRM para Contabilidade',
+    basePrice: 69,
+    color: {
+      primary: '#00E632',
+      secondary: '#0F1729',
+      bg: 'from-emerald-500/15 to-cyan-500/10',
+      border: 'border-emerald-500/40',
+      text: 'text-emerald-400',
+    },
+    logo: '/pipercore-logo-dark.png',
+    modules: [
+      { id: 'pc-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline', icon: 'GitBranch', price: 0, included: true },
+      { id: 'pc-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
+      { id: 'pc-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 0, included: true },
+      { id: 'pc-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 299, included: false },
+      { id: 'pc-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 79, included: false },
+      { id: 'pc-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 149, included: false },
+      { id: 'pc-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 39, included: false },
+      { id: 'pc-analytics-avancado', name: 'Analytics Avancado', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 59, included: false },
+      { id: 'pc-monitoramento-avancado', name: 'Monitoramento Avancado', description: 'Monitoramento avancado com alertas', icon: 'Shield', price: 49, included: false },
+    ],
+  },
+  {
+    id: 'piperleads2',
+    name: 'PiperLeads2',
+    tagline: 'CRM de Vendas com IA',
+    basePrice: 79,
+    color: {
+      primary: '#A78BFA',
+      secondary: '#BFFF00',
+      bg: 'from-purple-500/15 to-lime-500/10',
+      border: 'border-purple-500/40',
+      text: 'text-purple-400',
+    },
+    logo: '/piperleads-logo-white.svg',
+    modules: [
+      { id: 'pl-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
+      { id: 'pl-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
+      { id: 'pl-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 0, included: true },
+      { id: 'pl-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
+      { id: 'pl-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
+      { id: 'pl-automacoes', name: 'Automacoes', description: 'Workflows e automacoes de processos', icon: 'Zap', price: 0, included: true },
+      { id: 'pl-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 349, included: false },
+      { id: 'pl-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 89, included: false },
+      { id: 'pl-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 199, included: false },
+      { id: 'pl-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 49, included: false },
+      { id: 'pl-sales-assist', name: 'Sales Assist', description: 'Assistencia inteligente para vendas', icon: 'TrendingUp', price: 129, included: false },
+      { id: 'pl-propostas', name: 'Propostas', description: 'Geracao e gestao de propostas comerciais', icon: 'FileText', price: 79, included: false },
+      { id: 'pl-email-cadences', name: 'Email Cadences', description: 'Sequencias automatizadas de email', icon: 'Mail', price: 99, included: false },
+      { id: 'pl-instagram', name: 'Instagram', description: 'Integracao com Instagram para captacao', icon: 'Camera', price: 49, included: false },
+      { id: 'pl-piperhunt', name: 'PiperHunt Prospeccao B2B', description: 'Prospeccao automatizada de empresas', icon: 'Search', price: 199, included: false },
+    ],
+  },
+]
+
+export function getUserTier(users: number): UserTier {
+  for (const tier of USER_TIERS) {
+    if (tier.max === null && users >= tier.min) return tier
+    if (tier.max !== null && users >= tier.min && users <= tier.max) return tier
+  }
+  return USER_TIERS[0]
+}
+
+export function calculatePrice(
+  product: Product,
+  selectedModuleIds: string[],
+  users: number,
+  periodId: string,
+  config?: PricingConfig,
+): PriceBreakdown {
+  const basePrice = config?.basePrices[product.id] ?? product.basePrice
+
+  const tier = getUserTier(users)
+  const tierIndex = USER_TIERS.indexOf(tier)
+  const discountPercent = config?.tierDiscounts[tierIndex] ?? tier.discount
+
+  const discountedPerUser = basePrice * (1 - discountPercent)
+  const usersTotal = discountedPerUser * users
+
+  let addonsTotal = 0
+  for (const mod of product.modules) {
+    if (!mod.included && selectedModuleIds.includes(mod.id)) {
+      const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
+      addonsTotal += modPrice
+    }
+  }
+
+  const subtotal = usersTotal + addonsTotal
+
+  const periodData = PERIOD_DISCOUNTS.find(p => p.id === periodId) ?? PERIOD_DISCOUNTS[0]
+  const periodDiscount = config?.periodDiscounts[periodData.id] ?? periodData.discount
+  const periodDiscountAmount = subtotal * periodDiscount
+  const total = subtotal - periodDiscountAmount
+  const totalAnnual = total * 12
+
+  return {
+    basePerUser: basePrice,
+    discountPercent,
+    discountedPerUser,
+    usersTotal,
+    addonsTotal,
+    subtotal,
+    periodDiscount,
+    periodDiscountAmount,
+    total,
+    totalAnnual,
+  }
+}
