@@ -144,20 +144,8 @@ export function ProposalPreview({
             style={{ height: '42px', width: 'auto' }}
             crossOrigin="anonymous"
           />
-          <div>
-            <div
-              style={{
-                fontSize: '20px',
-                fontWeight: 700,
-                color: primaryColor,
-                fontFamily: 'Outfit, Inter, Arial, sans-serif',
-              }}
-            >
-              {product.name}
-            </div>
-            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '1px' }}>
-              {product.tagline}
-            </div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>
+            {product.tagline}
           </div>
         </div>
         {companyName && companyName.trim() !== '' && (
