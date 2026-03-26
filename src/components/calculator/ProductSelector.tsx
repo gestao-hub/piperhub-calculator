@@ -23,7 +23,6 @@ export function ProductSelector({ selectedProductId, onSelect }: ProductSelector
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {PRODUCTS.map((product) => {
           const isSelected = selectedProductId === product.id
-          const includedCount = product.modules.filter(m => m.included).length
 
           return (
             <button
@@ -74,21 +73,9 @@ export function ProductSelector({ selectedProductId, onSelect }: ProductSelector
               </div>
 
               <div className="flex items-center gap-2">
-                <Badge variant="success" className="text-xs">
-                  {includedCount} modulos inclusos
-                </Badge>
                 <Badge variant="secondary" className="text-xs">
-                  +{product.modules.length - includedCount} add-ons
+                  {product.modules.length} modulos disponiveis
                 </Badge>
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-border/30">
-                <p className="text-xs text-muted-foreground">
-                  {product.modules
-                    .filter(m => m.included)
-                    .map(m => m.name)
-                    .join(' - ')}
-                </p>
               </div>
             </button>
           )

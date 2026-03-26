@@ -34,8 +34,8 @@ export function PriceSummary({
   const isPiperhuntSelected = selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
   const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
 
-  const selectedAddons = product.modules.filter(
-    m => !m.included && selectedModuleIds.includes(m.id)
+  const selectedModules = product.modules.filter(
+    m => selectedModuleIds.includes(m.id)
   )
 
   // For product lookup in case config overrides prices
@@ -98,14 +98,14 @@ export function PriceSummary({
               <span className="font-medium text-foreground">{formatCurrency(breakdown.usersTotal)}</span>
             </div>
 
-            {/* Add-ons */}
-            {selectedAddons.length > 0 && (
+            {/* Modulos selecionados */}
+            {selectedModules.length > 0 && (
               <>
                 <Separator className="my-2" />
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Add-ons
+                  Modulos selecionados
                 </p>
-                {selectedAddons.map((mod) => {
+                {selectedModules.map((mod) => {
                   const isPiperhunt = mod.id === 'pl-piperhunt'
 
                   if (isPiperhunt && isPiperhuntSelected && piperhuntTier) {
@@ -132,7 +132,7 @@ export function PriceSummary({
                   )
                 })}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">Total add-ons</span>
+                  <span className="text-sm font-medium text-muted-foreground">Total modulos</span>
                   <span className="text-sm font-medium text-foreground">
                     {formatCurrency(breakdown.addonsTotal + breakdown.piperhuntCost)}
                   </span>

@@ -116,11 +116,11 @@ export const PRODUCTS: Product[] = [
     logo: '/piperkey-logo.png',
     logoLight: '/piperkey-logo-light.png',
     modules: [
-      { id: 'pk-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
-      { id: 'pk-agenda', name: 'Agenda', description: 'Agendamento de visitas e reunioes', icon: 'Calendar', price: 0, included: true },
-      { id: 'pk-monitoramento', name: 'Monitoramento', description: 'Monitoramento de atividades e equipe', icon: 'Eye', price: 0, included: true },
-      { id: 'pk-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
-      { id: 'pk-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
+      { id: 'pk-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 87, included: false },
+      { id: 'pk-agenda', name: 'Agenda', description: 'Agendamento de visitas e reunioes', icon: 'Calendar', price: 54, included: false },
+      { id: 'pk-monitoramento', name: 'Monitoramento', description: 'Monitoramento de atividades e equipe', icon: 'Eye', price: 54, included: false },
+      { id: 'pk-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 65, included: false },
+      { id: 'pk-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 54, included: false },
       { id: 'pk-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 384, included: false },
       { id: 'pk-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 98, included: false },
       { id: 'pk-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 219, included: false },
@@ -150,15 +150,17 @@ export const PRODUCTS: Product[] = [
     logo: '/pipercore-logo-dark.png',
     logoLight: '/pipercore-logo-light.png',
     modules: [
-      { id: 'pc-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline', icon: 'GitBranch', price: 0, included: true },
-      { id: 'pc-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
-      { id: 'pc-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 0, included: true },
+      { id: 'pc-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline', icon: 'GitBranch', price: 76, included: false },
+      { id: 'pc-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 43, included: false },
+      { id: 'pc-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 43, included: false },
       { id: 'pc-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 329, included: false },
       { id: 'pc-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 87, included: false },
       { id: 'pc-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 164, included: false },
       { id: 'pc-csat', name: 'CSAT', description: 'Pesquisa de satisfacao do cliente', icon: 'ThumbsUp', price: 43, included: false },
       { id: 'pc-analytics-avancado', name: 'Analytics Avancado', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 65, included: false },
       { id: 'pc-monitoramento-avancado', name: 'Monitoramento Avancado', description: 'Monitoramento avancado com alertas', icon: 'Shield', price: 54, included: false },
+      { id: 'pc-portal-cliente', name: 'Portal do Cliente', description: 'Portal para clientes acompanharem obrigacoes', icon: 'Layout', price: 109, included: false },
+      { id: 'pc-monitoramento-fiscal', name: 'Monitoramento Fiscal', description: 'Monitoramento fiscal automatizado (CNDs, situacao fiscal)', icon: 'FileSearch', price: 164, included: false },
     ],
   },
   {
@@ -177,12 +179,12 @@ export const PRODUCTS: Product[] = [
     logo: '/piperleads-logo.png',
     logoLight: '/piperleads-logo-light.png',
     modules: [
-      { id: 'pl-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 0, included: true },
-      { id: 'pl-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 0, included: true },
-      { id: 'pl-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 0, included: true },
-      { id: 'pl-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 0, included: true },
-      { id: 'pl-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 0, included: true },
-      { id: 'pl-automacoes', name: 'Automacoes', description: 'Workflows e automacoes de processos', icon: 'Zap', price: 0, included: true },
+      { id: 'pl-funis', name: 'Funis/CRM', description: 'Gestao de funis e pipeline de vendas', icon: 'GitBranch', price: 87, included: false },
+      { id: 'pl-agenda', name: 'Agenda', description: 'Agendamento de reunioes e tarefas', icon: 'Calendar', price: 54, included: false },
+      { id: 'pl-monitoramento', name: 'Monitoramento', description: 'Monitoramento de equipe e atividades', icon: 'Eye', price: 54, included: false },
+      { id: 'pl-analytics', name: 'Analytics', description: 'Relatorios e dashboards avancados', icon: 'BarChart3', price: 65, included: false },
+      { id: 'pl-contatos', name: 'Contatos', description: 'Gestao de contatos e leads', icon: 'Users', price: 54, included: false },
+      { id: 'pl-automacoes', name: 'Automacoes', description: 'Workflows e automacoes de processos', icon: 'Zap', price: 87, included: false },
       { id: 'pl-agentes-ia', name: 'Agentes IA', description: 'Automacao com agentes de inteligencia artificial', icon: 'Bot', price: 384, included: false },
       { id: 'pl-assistente-ia', name: 'Assistente IA', description: 'Assistente inteligente para produtividade', icon: 'Sparkles', price: 98, included: false },
       { id: 'pl-campanhas-whatsapp', name: 'Campanhas WhatsApp', description: 'Campanhas em massa via WhatsApp', icon: 'Megaphone', price: 219, included: false },
@@ -224,7 +226,7 @@ export function calculatePrice(
 
   let addonsTotal = 0
   for (const mod of product.modules) {
-    if (!mod.included && selectedModuleIds.includes(mod.id)) {
+    if (selectedModuleIds.includes(mod.id)) {
       // PiperHunt is credit-based, skip from flat addon total
       if (mod.id === 'pl-piperhunt') continue
       const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price

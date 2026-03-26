@@ -35,7 +35,7 @@ export function ProposalPreview({
   const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
 
   const allModules = product.modules.filter(
-    m => m.included || selectedModuleIds.includes(m.id)
+    m => selectedModuleIds.includes(m.id)
   )
 
   const benefits = [
@@ -215,11 +215,11 @@ export function ProposalPreview({
                         borderRadius: '12px',
                         fontSize: '11px',
                         fontWeight: 600,
-                        backgroundColor: mod.included ? '#dcfce7' : `${product.color.primary}20`,
-                        color: mod.included ? '#166534' : product.color.primary,
+                        backgroundColor: `${product.color.primary}20`,
+                        color: product.color.primary,
                       }}
                     >
-                      {mod.included ? 'Incluso' : isPiperhunt ? 'Creditos' : 'Add-on'}
+                      {isPiperhunt ? 'Creditos' : 'Selecionado'}
                     </span>
                   </td>
                   <td
@@ -228,10 +228,10 @@ export function ProposalPreview({
                       borderBottom: '1px solid #e5e7eb',
                       textAlign: 'right',
                       fontWeight: 500,
-                      color: mod.included ? '#16a34a' : '#1f2937',
+                      color: '#1f2937',
                     }}
                   >
-                    {mod.included ? 'Incluso' : `${fmtCurrency(modPrice)}/mes`}
+                    {`${fmtCurrency(modPrice)}/mes`}
                   </td>
                 </tr>
               )
@@ -316,7 +316,7 @@ export function ProposalPreview({
               backgroundColor: '#f9fafb',
             }}
           >
-            <span style={{ color: '#6b7280' }}>Total add-ons</span>
+            <span style={{ color: '#6b7280' }}>Total modulos selecionados</span>
             <span style={{ fontWeight: 500 }}>
               {fmtCurrency(breakdown.addonsTotal)}
             </span>

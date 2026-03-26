@@ -36,10 +36,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
 
   const handleSelectProduct = useCallback((productId: string) => {
     setSelectedProductId(productId)
-    const product = PRODUCTS.find(p => p.id === productId)
-    if (product) {
-      setSelectedModuleIds(product.modules.filter(m => m.included).map(m => m.id))
-    }
+    setSelectedModuleIds([])
   }, [])
 
   const handleToggleModule = useCallback((moduleId: string) => {

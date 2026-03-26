@@ -105,7 +105,6 @@ export function PricingSettings() {
       {/* Products */}
       {PRODUCTS.map((product) => {
         const isOpen = openSections[product.id] ?? false
-        const addons = product.modules.filter(m => !m.included)
 
         return (
           <div key={product.id} className="glass-card rounded-xl overflow-hidden">
@@ -168,10 +167,10 @@ export function PricingSettings() {
                 {/* Module prices */}
                 <div>
                   <h4 className="text-sm font-medium text-foreground mb-3">
-                    Precos dos modulos (add-ons)
+                    Precos dos modulos
                   </h4>
                   <div className="space-y-2">
-                    {addons.map((mod) => (
+                    {product.modules.map((mod) => (
                       <div key={mod.id} className="flex items-center justify-between gap-4">
                         <span className="text-sm text-muted-foreground flex-1">{mod.name}</span>
                         <div className="flex items-center gap-2">
