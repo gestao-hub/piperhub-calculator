@@ -163,7 +163,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'piperleads2',
-    name: 'PiperLeads2',
+    name: 'PiperLeads',
     tagline: 'CRM de Vendas com IA',
     basePrice: 87,
     setupFee: 1319,
