@@ -75,7 +75,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
       <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/favicon.png" alt="PiperHub" className="h-8 w-8" />
+            <img src="/piperhub-icon.png" alt="PiperHub" className="h-8 w-auto" />
             <h1 className="text-xl font-display font-bold text-foreground">
               Calculadora de Precos
             </h1>
