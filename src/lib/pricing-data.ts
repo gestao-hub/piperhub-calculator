@@ -105,7 +105,7 @@ export const PRODUCTS: Product[] = [
     name: 'PiperKey',
     tagline: 'CRM Imobiliario com IA',
     basePrice: 98,
-    setupFee: 1649,
+    setupFee: 2.5,
     color: {
       primary: '#2B7FD9',
       secondary: '#D4A920',
@@ -139,7 +139,7 @@ export const PRODUCTS: Product[] = [
     name: 'PiperCore',
     tagline: 'CRM para Contabilidade',
     basePrice: 76,
-    setupFee: 989,
+    setupFee: 2.5,
     color: {
       primary: '#00E632',
       secondary: '#0F1729',
@@ -166,7 +166,7 @@ export const PRODUCTS: Product[] = [
     name: 'PiperLeads',
     tagline: 'CRM de Vendas com IA',
     basePrice: 87,
-    setupFee: 1319,
+    setupFee: 2.5,
     color: {
       primary: '#A78BFA',
       secondary: '#BFFF00',
@@ -213,7 +213,7 @@ export function calculatePrice(
   piperhuntCnpjs?: number,
 ): PriceBreakdown {
   const basePrice = config?.basePrices[product.id] ?? product.basePrice
-  const setupFee = config?.setupFees[product.id] ?? product.setupFee
+  const setupMultiplier = config?.setupFees[product.id] ?? 2.5
 
   const tier = getUserTier(users)
   const tierIndex = USER_TIERS.indexOf(tier)
@@ -244,6 +244,7 @@ export function calculatePrice(
   const periodDiscountAmount = subtotal * periodDiscount
   const total = subtotal - periodDiscountAmount
   const totalAnnual = total * 12
+  const setupFee = total * setupMultiplier
 
   return {
     basePerUser: basePrice,

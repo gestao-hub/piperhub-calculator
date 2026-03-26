@@ -220,7 +220,7 @@ export function PriceSummary({
                 <div>
                   <p className="text-sm font-semibold text-foreground">Taxa de implantacao</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Setup completo + treinamento da equipe (pagamento unico)
+                    2,5x a mensalidade - setup completo + treinamento (pagamento unico)
                   </p>
                 </div>
                 <span

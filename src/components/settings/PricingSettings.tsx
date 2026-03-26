@@ -150,11 +150,12 @@ export function PricingSettings() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground block mb-2">
-                      Taxa de implantacao (R$)
+                      Multiplicador implantacao (x mensalidade)
                     </label>
                     <Input
                       type="number"
-                      step="1"
+                      step="0.1"
+                      min="0"
                       value={draft.setupFees[product.id] ?? product.setupFee}
                       onChange={(e) => handleSetupFee(product.id, e.target.value)}
                       className="w-40"
