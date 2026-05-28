@@ -1,9 +1,18 @@
 import type { Product, PricingConfig } from '@/lib/pricing-data'
-import { calculatePrice, getUserTier, PERIOD_DISCOUNTS, PIPERHUNT_TIERS, getPiperHuntTier } from '@/lib/pricing-data'
+import {
+  calculatePrice,
+  calculatePackagePrice,
+  getUserTier,
+  PERIOD_DISCOUNTS,
+  PIPERHUNT_TIERS,
+  getPiperHuntTier,
+  PIPERKEY_PACKAGES,
+} from '@/lib/pricing-data'
 
 interface ProposalPreviewProps {
   product: Product
   selectedModuleIds: string[]
+  selectedPackageId?: string | null
   users: number
   period: string
   config?: PricingConfig
@@ -18,13 +27,21 @@ function fmtCurrency(value: number): string {
 export function ProposalPreview({
   product,
   selectedModuleIds,
+  selectedPackageId,
   users,
   period,
   config,
   piperhuntCnpjs = 0,
   companyName,
 }: ProposalPreviewProps) {
-  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
+  const selectedPackage = selectedPackageId
+    ? PIPERKEY_PACKAGES.find(p => p.id === selectedPackageId)
+    : undefined
+
+  const breakdown = selectedPackage
+    ? calculatePackagePrice(selectedPackage, product, users, period, config)
+    : calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
+
   const tier = getUserTier(users)
   const periodData = PERIOD_DISCOUNTS.find(p => p.id === period) ?? PERIOD_DISCOUNTS[0]
   const today = new Date().toLocaleDateString('pt-BR', {
@@ -33,7 +50,8 @@ export function ProposalPreview({
     year: 'numeric',
   })
 
-  const isPiperhuntSelected = selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
+  const isPiperhuntSelected =
+    !selectedPackage && selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
   const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
 
   const allModules = product.modules.filter(
@@ -192,6 +210,33 @@ export function ProposalPreview({
           Configuracao Selecionada
         </h3>
 
+        {selectedPackage && (
+          <div
+            style={{
+              padding: '14px 18px',
+              borderRadius: '10px',
+              backgroundColor: primaryLight,
+              border: `1px solid ${primaryMedium}`,
+              marginBottom: '14px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '13px',
+                fontWeight: 700,
+                color: primaryColor,
+                fontFamily: 'Outfit, Inter, Arial, sans-serif',
+                marginBottom: '4px',
+              }}
+            >
+              {selectedPackage.name}
+            </div>
+            <div style={{ fontSize: '11px', color: '#6b7280' }}>
+              {selectedPackage.description}
+            </div>
+          </div>
+        )}
+
         <table
           style={{
             width: '100%',
@@ -225,7 +270,7 @@ export function ProposalPreview({
                   fontSize: '12px',
                 }}
               >
-                Valor/mes
+                {selectedPackage ? 'Incluso' : 'Valor/mes'}
               </th>
             </tr>
           </thead>
@@ -238,6 +283,7 @@ export function ProposalPreview({
               const modLabel = isPiperhunt && isPiperhuntSelected
                 ? `PiperHunt (${piperhuntCnpjs} CNPJs)`
                 : mod.name
+              const valueDisplay = selectedPackage ? '✓' : fmtCurrency(modPrice)
 
               return (
                 <tr
@@ -262,10 +308,10 @@ export function ProposalPreview({
                       borderBottom: '1px solid #f0f1f3',
                       textAlign: 'right',
                       fontWeight: 600,
-                      color: '#1f2937',
+                      color: selectedPackage ? '#16a34a' : '#1f2937',
                     }}
                   >
-                    {fmtCurrency(modPrice)}
+                    {valueDisplay}
                   </td>
                 </tr>
               )
@@ -314,59 +360,80 @@ export function ProposalPreview({
             </span>
           </div>
 
-          {/* Base row */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '12px 20px',
-              borderBottom: '1px solid #f0f1f3',
-              backgroundColor: '#fafbfc',
-            }}
-          >
-            <span style={{ color: '#6b7280', fontSize: '12px' }}>
-              Base ({users} x {fmtCurrency(breakdown.basePerUser)})
-            </span>
-            <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
-              {fmtCurrency(breakdown.basePerUser * users)}
-            </span>
-          </div>
-
-          {/* Volume discount */}
-          {breakdown.discountPercent > 0 && (
+          {selectedPackage ? (
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 padding: '12px 20px',
                 borderBottom: '1px solid #f0f1f3',
-                backgroundColor: '#ffffff',
+                backgroundColor: '#fafbfc',
               }}
             >
               <span style={{ color: '#6b7280', fontSize: '12px' }}>
-                Desconto volume (-{(breakdown.discountPercent * 100).toFixed(0)}%)
+                {selectedPackage.name} ({users} x {fmtCurrency(breakdown.basePerUser)})
               </span>
-              <span style={{ fontWeight: 600, color: '#16a34a', fontSize: '12px' }}>
-                -{fmtCurrency(breakdown.basePerUser * users - breakdown.usersTotal)}
+              <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
+                {fmtCurrency(breakdown.usersTotal)}
               </span>
             </div>
-          )}
+          ) : (
+            <>
+              {/* Base row */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '12px 20px',
+                  borderBottom: '1px solid #f0f1f3',
+                  backgroundColor: '#fafbfc',
+                }}
+              >
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                  Base ({users} x {fmtCurrency(breakdown.basePerUser)})
+                </span>
+                <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
+                  {fmtCurrency(breakdown.basePerUser * users)}
+                </span>
+              </div>
 
-          {/* Modules total */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '12px 20px',
-              borderBottom: '1px solid #f0f1f3',
-              backgroundColor: '#fafbfc',
-            }}
-          >
-            <span style={{ color: '#6b7280', fontSize: '12px' }}>Total modulos selecionados</span>
-            <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
-              {fmtCurrency(breakdown.addonsTotal)}
-            </span>
-          </div>
+              {/* Volume discount */}
+              {breakdown.discountPercent > 0 && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '12px 20px',
+                    borderBottom: '1px solid #f0f1f3',
+                    backgroundColor: '#ffffff',
+                  }}
+                >
+                  <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                    Desconto volume (-{(breakdown.discountPercent * 100).toFixed(0)}%)
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#16a34a', fontSize: '12px' }}>
+                    -{fmtCurrency(breakdown.basePerUser * users - breakdown.usersTotal)}
+                  </span>
+                </div>
+              )}
+
+              {/* Modules total */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '12px 20px',
+                  borderBottom: '1px solid #f0f1f3',
+                  backgroundColor: '#fafbfc',
+                }}
+              >
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Total modulos selecionados</span>
+                <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
+                  {fmtCurrency(breakdown.addonsTotal)}
+                </span>
+              </div>
+            </>
+          )}
 
           {/* PiperHunt line */}
           {isPiperhuntSelected && (

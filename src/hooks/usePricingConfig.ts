@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS } from '@/lib/pricing-data'
+import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
 import type { PricingConfig } from '@/lib/pricing-data'
 
 const STORAGE_KEY = 'piperhub-pricing-config'
@@ -24,19 +24,41 @@ function getDefaultConfig(): PricingConfig {
     periodDiscounts[p.id] = p.discount
   }
 
-  return { basePrices, setupFees, modulePrices, tierDiscounts, periodDiscounts }
+  const packageTierPrices: Record<string, number[]> = {}
+  for (const pkg of PIPERKEY_PACKAGES) {
+    packageTierPrices[pkg.id] = [...pkg.tierPrices]
+  }
+
+  return { basePrices, setupFees, modulePrices, tierDiscounts, periodDiscounts, packageTierPrices }
 }
 
 function loadConfig(): PricingConfig {
+  const defaults = getDefaultConfig()
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
-      return JSON.parse(stored) as PricingConfig
+      const parsed = JSON.parse(stored) as Partial<PricingConfig>
+      return {
+        basePrices: { ...defaults.basePrices, ...parsed.basePrices },
+        setupFees: { ...defaults.setupFees, ...parsed.setupFees },
+        modulePrices: {
+          ...defaults.modulePrices,
+          ...Object.fromEntries(
+            Object.entries(parsed.modulePrices ?? {}).map(([pid, mods]) => [
+              pid,
+              { ...defaults.modulePrices[pid], ...mods },
+            ])
+          ),
+        },
+        tierDiscounts: parsed.tierDiscounts ?? defaults.tierDiscounts,
+        periodDiscounts: { ...defaults.periodDiscounts, ...parsed.periodDiscounts },
+        packageTierPrices: { ...defaults.packageTierPrices, ...parsed.packageTierPrices },
+      }
     }
   } catch {
     // ignore parse errors
   }
-  return getDefaultConfig()
+  return defaults
 }
 
 export function usePricingConfig() {

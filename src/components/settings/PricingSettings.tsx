@@ -1,18 +1,22 @@
-import { useState } from 'react'
-import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS } from '@/lib/pricing-data'
+import { useState, useEffect } from 'react'
+import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
 import type { PricingConfig } from '@/lib/pricing-data'
 import { usePricingConfig } from '@/hooks/usePricingConfig'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
-import { Save, RotateCcw, ChevronDown, ChevronRight } from 'lucide-react'
+import { cn, formatCurrency } from '@/lib/utils'
+import { Save, RotateCcw, ChevronDown, ChevronRight, Package as PackageIcon } from 'lucide-react'
 
 export function PricingSettings() {
   const { config, updateConfig, resetConfig } = usePricingConfig()
   const [draft, setDraft] = useState<PricingConfig>(config)
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({})
   const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    setDraft(config)
+  }, [config])
 
   function toggleSection(id: string) {
     setOpenSections(prev => ({ ...prev, [id]: !prev[id] }))
@@ -65,6 +69,23 @@ export function PricingSettings() {
     }
   }
 
+  function handlePackageTierPrice(packageId: string, tierIndex: number, value: string) {
+    const num = parseFloat(value)
+    if (!isNaN(num)) {
+      setDraft(prev => {
+        const current = prev.packageTierPrices[packageId]
+          ?? PIPERKEY_PACKAGES.find(p => p.id === packageId)?.tierPrices
+          ?? []
+        const next = [...current]
+        next[tierIndex] = Math.max(0, num)
+        return {
+          ...prev,
+          packageTierPrices: { ...prev.packageTierPrices, [packageId]: next },
+        }
+      })
+    }
+  }
+
   function handlePeriodDiscount(periodId: string, value: string) {
     const num = parseFloat(value) / 100
     if (!isNaN(num)) {
@@ -97,6 +118,7 @@ export function PricingSettings() {
       ),
       tierDiscounts: USER_TIERS.map(t => t.discount),
       periodDiscounts: Object.fromEntries(PERIOD_DISCOUNTS.map(p => [p.id, p.discount])),
+      packageTierPrices: Object.fromEntries(PIPERKEY_PACKAGES.map(p => [p.id, [...p.tierPrices]])),
     })
   }
 
@@ -192,6 +214,61 @@ export function PricingSettings() {
           </div>
         )
       })}
+
+      {/* Pacotes PiperKey */}
+      <div className="glass-card rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <PackageIcon className="w-5 h-5 text-foreground" />
+          <h3 className="text-base font-display font-bold text-foreground">
+            Pacotes PiperKey - preco por faixa de usuarios
+          </h3>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          Cada pacote tem um preco R$/usuario/mes diferente para cada faixa. Edite os valores abaixo.
+        </p>
+
+        <div className="space-y-6">
+          {PIPERKEY_PACKAGES.map((pkg) => {
+            const currentPrices = draft.packageTierPrices[pkg.id] ?? pkg.tierPrices
+            return (
+              <div key={pkg.id} className="rounded-lg border border-border/50 p-4">
+                <div className="flex items-baseline justify-between mb-3">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground">{pkg.name}</h4>
+                    <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {pkg.moduleIds.length} modulos
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  {USER_TIERS.map((tier, idx) => (
+                    <div key={tier.label}>
+                      <label className="block text-xs text-muted-foreground mb-1">
+                        {tier.label}
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">R$</span>
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          value={currentPrices[idx] ?? pkg.tierPrices[idx]}
+                          onChange={(e) => handlePackageTierPrice(pkg.id, idx, e.target.value)}
+                          className="w-full text-sm"
+                        />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Padrao: {formatCurrency(pkg.tierPrices[idx])}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Tier discounts */}
       <div className="glass-card rounded-xl p-5">

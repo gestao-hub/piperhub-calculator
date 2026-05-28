@@ -1,14 +1,23 @@
 import type { Product, PricingConfig } from '@/lib/pricing-data'
-import { PRODUCTS, PERIOD_DISCOUNTS, calculatePrice, getUserTier, getPiperHuntTier } from '@/lib/pricing-data'
+import {
+  PRODUCTS,
+  PERIOD_DISCOUNTS,
+  PIPERKEY_PACKAGES,
+  calculatePrice,
+  calculatePackagePrice,
+  getUserTier,
+  getPiperHuntTier,
+} from '@/lib/pricing-data'
 import { formatCurrency, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { FileDown, RotateCcw, Wrench, Building2 } from 'lucide-react'
+import { FileDown, RotateCcw, Wrench, Building2, Package as PackageIcon } from 'lucide-react'
 
 interface PriceSummaryProps {
   product: Product
   selectedModuleIds: string[]
+  selectedPackageId: string | null
   users: number
   period: string
   onChangePeriod: (period: string) => void
@@ -23,6 +32,7 @@ interface PriceSummaryProps {
 export function PriceSummary({
   product,
   selectedModuleIds,
+  selectedPackageId,
   users,
   period,
   onChangePeriod,
@@ -33,9 +43,17 @@ export function PriceSummary({
   companyName,
   onChangeCompanyName,
 }: PriceSummaryProps) {
-  const breakdown = calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
+  const selectedPackage = selectedPackageId
+    ? PIPERKEY_PACKAGES.find(p => p.id === selectedPackageId)
+    : undefined
+
+  const breakdown = selectedPackage
+    ? calculatePackagePrice(selectedPackage, product, users, period, config)
+    : calculatePrice(product, selectedModuleIds, users, period, config, piperhuntCnpjs)
+
   const tier = getUserTier(users)
-  const isPiperhuntSelected = selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
+  const isPiperhuntSelected =
+    !selectedPackage && selectedModuleIds.includes('pl-piperhunt') && piperhuntCnpjs > 0
   const piperhuntTier = isPiperhuntSelected ? getPiperHuntTier(piperhuntCnpjs) : null
 
   const selectedModules = product.modules.filter(
@@ -69,73 +87,103 @@ export function PriceSummary({
 
           {/* Line items */}
           <div className="space-y-3 mb-6">
-            {/* Base */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">
-                Base ({users} usuarios x {formatCurrency(breakdown.basePerUser)})
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                {formatCurrency(breakdown.basePerUser * users)}
-              </span>
-            </div>
-
-            {/* Tier discount */}
-            {breakdown.discountPercent > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Desconto volume ({tier.label})
-                </span>
-                <span className="text-sm font-medium text-success">
-                  -{(breakdown.discountPercent * 100).toFixed(0)}% ({formatCurrency(breakdown.basePerUser * users - breakdown.usersTotal)})
-                </span>
-              </div>
-            )}
-
-            {/* After discount subtotal for users */}
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Subtotal usuarios</span>
-              <span className="font-medium text-foreground">{formatCurrency(breakdown.usersTotal)}</span>
-            </div>
-
-            {/* Modulos selecionados */}
-            {selectedModules.length > 0 && (
+            {selectedPackage ? (
               <>
-                <Separator className="my-2" />
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Modulos selecionados
-                </p>
-                {selectedModules.map((mod) => {
-                  const isPiperhunt = mod.id === 'pl-piperhunt'
-
-                  if (isPiperhunt && isPiperhuntSelected && piperhuntTier) {
-                    return (
-                      <div key={mod.id} className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">
-                          PiperHunt ({piperhuntCnpjs} CNPJs x {formatCurrency(piperhuntTier.pricePerCnpj)})
-                        </span>
-                        <span className="text-sm font-medium text-foreground">
-                          {formatCurrency(breakdown.piperhuntCost)}
-                        </span>
-                      </div>
-                    )
-                  }
-
-                  const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
-                  return (
-                    <div key={mod.id} className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{mod.name}</span>
-                      <span className="text-sm font-medium text-foreground">
-                        {formatCurrency(modPrice)}
-                      </span>
-                    </div>
-                  )
-                })}
+                <div className="flex items-start gap-2">
+                  <PackageIcon
+                    className="w-4 h-4 mt-0.5 shrink-0"
+                    style={{ color: product.color.primary }}
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">{selectedPackage.name}</p>
+                    <p className="text-xs text-muted-foreground">{selectedPackage.tagline}</p>
+                  </div>
+                </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">Total modulos</span>
+                  <span className="text-sm text-muted-foreground">
+                    {users} usuarios x {formatCurrency(breakdown.basePerUser)} ({tier.label})
+                  </span>
                   <span className="text-sm font-medium text-foreground">
-                    {formatCurrency(breakdown.addonsTotal + breakdown.piperhuntCost)}
+                    {formatCurrency(breakdown.usersTotal)}
                   </span>
                 </div>
+                <div className="pt-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    Inclui {selectedPackage.moduleIds.length} modulos
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Base */}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    Base ({users} usuarios x {formatCurrency(breakdown.basePerUser)})
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {formatCurrency(breakdown.basePerUser * users)}
+                  </span>
+                </div>
+
+                {/* Tier discount */}
+                {breakdown.discountPercent > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                      Desconto volume ({tier.label})
+                    </span>
+                    <span className="text-sm font-medium text-success">
+                      -{(breakdown.discountPercent * 100).toFixed(0)}% ({formatCurrency(breakdown.basePerUser * users - breakdown.usersTotal)})
+                    </span>
+                  </div>
+                )}
+
+                {/* After discount subtotal for users */}
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Subtotal usuarios</span>
+                  <span className="font-medium text-foreground">{formatCurrency(breakdown.usersTotal)}</span>
+                </div>
+
+                {/* Modulos selecionados */}
+                {selectedModules.length > 0 && (
+                  <>
+                    <Separator className="my-2" />
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      Modulos selecionados
+                    </p>
+                    {selectedModules.map((mod) => {
+                      const isPiperhunt = mod.id === 'pl-piperhunt'
+
+                      if (isPiperhunt && isPiperhuntSelected && piperhuntTier) {
+                        return (
+                          <div key={mod.id} className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">
+                              PiperHunt ({piperhuntCnpjs} CNPJs x {formatCurrency(piperhuntTier.pricePerCnpj)})
+                            </span>
+                            <span className="text-sm font-medium text-foreground">
+                              {formatCurrency(breakdown.piperhuntCost)}
+                            </span>
+                          </div>
+                        )
+                      }
+
+                      const modPrice = config?.modulePrices[product.id]?.[mod.id] ?? mod.price
+                      return (
+                        <div key={mod.id} className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">{mod.name}</span>
+                          <span className="text-sm font-medium text-foreground">
+                            {formatCurrency(modPrice)}
+                          </span>
+                        </div>
+                      )
+                    })}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-muted-foreground">Total modulos</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {formatCurrency(breakdown.addonsTotal + breakdown.piperhuntCost)}
+                      </span>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>

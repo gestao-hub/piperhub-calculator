@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { PRODUCTS } from '@/lib/pricing-data'
+import { PRODUCTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
 import type { Product } from '@/lib/pricing-data'
 import { generatePDF } from '@/lib/pdf-generator'
 import { usePricingConfig } from '@/hooks/usePricingConfig'
@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ProductSelector } from '@/components/calculator/ProductSelector'
 import { ModuleSelector } from '@/components/calculator/ModuleSelector'
+import { PackageSelector } from '@/components/calculator/PackageSelector'
 import { UserTierSlider } from '@/components/calculator/UserTierSlider'
 import { PriceSummary } from '@/components/calculator/PriceSummary'
 import { ProposalPreview } from '@/components/calculator/ProposalPreview'
@@ -27,6 +28,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>([])
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
   const [users, setUsers] = useState(5)
   const [period, setPeriod] = useState('monthly')
   const [piperhuntCnpjs, setPiperhuntCnpjs] = useState(200)
@@ -38,9 +40,21 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
   const handleSelectProduct = useCallback((productId: string) => {
     setSelectedProductId(productId)
     setSelectedModuleIds([])
+    setSelectedPackageId(null)
+  }, [])
+
+  const handleSelectPackage = useCallback((packageId: string | null) => {
+    setSelectedPackageId(packageId)
+    if (packageId) {
+      const pkg = PIPERKEY_PACKAGES.find(p => p.id === packageId)
+      if (pkg) setSelectedModuleIds(pkg.moduleIds)
+    } else {
+      setSelectedModuleIds([])
+    }
   }, [])
 
   const handleToggleModule = useCallback((moduleId: string) => {
+    setSelectedPackageId(null)
     setSelectedModuleIds(prev =>
       prev.includes(moduleId)
         ? prev.filter(id => id !== moduleId)
@@ -58,6 +72,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
     setCurrentStep(1)
     setSelectedProductId(null)
     setSelectedModuleIds([])
+    setSelectedPackageId(null)
     setUsers(5)
     setPeriod('monthly')
     setPiperhuntCnpjs(200)
@@ -146,13 +161,24 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
         )}
 
         {currentStep === 2 && selectedProduct && (
-          <ModuleSelector
-            product={selectedProduct}
-            selectedModuleIds={selectedModuleIds}
-            onToggle={handleToggleModule}
-            piperhuntCnpjs={piperhuntCnpjs}
-            onChangePiperhuntCnpjs={setPiperhuntCnpjs}
-          />
+          <>
+            {selectedProduct.id === 'piperkey' && (
+              <PackageSelector
+                product={selectedProduct}
+                selectedPackageId={selectedPackageId}
+                onSelect={handleSelectPackage}
+                users={users}
+                config={config}
+              />
+            )}
+            <ModuleSelector
+              product={selectedProduct}
+              selectedModuleIds={selectedModuleIds}
+              onToggle={handleToggleModule}
+              piperhuntCnpjs={piperhuntCnpjs}
+              onChangePiperhuntCnpjs={setPiperhuntCnpjs}
+            />
+          </>
         )}
 
         {currentStep === 3 && selectedProduct && (
@@ -167,6 +193,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
           <PriceSummary
             product={selectedProduct}
             selectedModuleIds={selectedModuleIds}
+            selectedPackageId={selectedPackageId}
             users={users}
             period={period}
             onChangePeriod={setPeriod}
@@ -212,6 +239,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
         <ProposalPreview
           product={selectedProduct}
           selectedModuleIds={selectedModuleIds}
+          selectedPackageId={selectedPackageId}
           users={users}
           period={period}
           config={config}

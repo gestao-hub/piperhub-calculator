@@ -39,6 +39,19 @@ export interface PricingConfig {
   modulePrices: Record<string, Record<string, number>>
   tierDiscounts: number[]
   periodDiscounts: Record<string, number>
+  packageTierPrices: Record<string, number[]>
+}
+
+export interface Package {
+  id: string
+  productId: 'piperkey'
+  name: string
+  tagline: string
+  description: string
+  moduleIds: string[]
+  tierPrices: number[]
+  setupFeeMultiplier: number
+  highlight?: boolean
 }
 
 export interface PriceBreakdown {
@@ -132,6 +145,8 @@ export const PRODUCTS: Product[] = [
       { id: 'pk-pos-venda', name: 'Pos-Venda', description: 'Gestao do pos-venda e entrega', icon: 'Package', price: 109, included: false },
       { id: 'pk-gestao-aluguel', name: 'Gestao de Aluguel', description: 'Administracao de imoveis para aluguel', icon: 'Home', price: 164, included: false },
       { id: 'pk-propriedades', name: 'Propriedades', description: 'Catalogo e gestao de propriedades', icon: 'Building', price: 87, included: false },
+      { id: 'pk-empreendimentos', name: 'Empreendimentos', description: 'Gestao de empreendimentos imobiliarios', icon: 'Building2', price: 109, included: false },
+      { id: 'pk-subpagina', name: 'Subpagina da Imobiliaria', description: 'Pagina publica personalizada da imobiliaria', icon: 'Layout', price: 87, included: false },
     ],
   },
   {
@@ -197,6 +212,118 @@ export const PRODUCTS: Product[] = [
     ],
   },
 ]
+
+const PACOTE_1_MODULES = [
+  'pk-funis',
+  'pk-agenda',
+  'pk-monitoramento',
+  'pk-analytics',
+  'pk-contatos',
+  'pk-pipeline-financeiro',
+  'pk-propriedades',
+  'pk-empreendimentos',
+  'pk-subpagina',
+]
+
+const PACOTE_2_MODULES = [
+  ...PACOTE_1_MODULES,
+  'pk-agentes-ia',
+  'pk-assistente-ia',
+]
+
+const PACOTE_3_MODULES = [
+  ...PACOTE_2_MODULES,
+  'pk-pos-venda',
+  'pk-gestao-aluguel',
+  'pk-campanhas-whatsapp',
+]
+
+export const PIPERKEY_PACKAGES: Package[] = [
+  {
+    id: 'pk-pacote-1',
+    productId: 'piperkey',
+    name: 'Pacote Essencial',
+    tagline: 'O essencial para operar',
+    description: 'CRM completo, agenda, monitoramento, analytics, contatos, pipeline financeiro, propriedades, empreendimentos e subpagina da imobiliaria.',
+    moduleIds: PACOTE_1_MODULES,
+    tierPrices: [197, 177, 167, 157, 147],
+    setupFeeMultiplier: 2.5,
+  },
+  {
+    id: 'pk-pacote-2',
+    productId: 'piperkey',
+    name: 'Pacote IA',
+    tagline: 'Essencial + Inteligencia Artificial',
+    description: 'Tudo do Pacote Essencial + Agentes de IA + Assistente de IA para automacao e produtividade.',
+    moduleIds: PACOTE_2_MODULES,
+    tierPrices: [347, 317, 297, 277, 257],
+    setupFeeMultiplier: 2.5,
+    highlight: true,
+  },
+  {
+    id: 'pk-pacote-3',
+    productId: 'piperkey',
+    name: 'Pacote Completo',
+    tagline: 'Tudo do PiperKey',
+    description: 'Tudo do Pacote IA + Pos-venda + Gestao de Aluguel + Campanhas WhatsApp.',
+    moduleIds: PACOTE_3_MODULES,
+    tierPrices: [497, 457, 427, 397, 367],
+    setupFeeMultiplier: 2.5,
+  },
+]
+
+export function getPackageTierPrice(
+  packageId: string,
+  users: number,
+  config?: PricingConfig,
+): number {
+  const pkg = PIPERKEY_PACKAGES.find(p => p.id === packageId)
+  if (!pkg) return 0
+  const tier = getUserTier(users)
+  const tierIndex = USER_TIERS.indexOf(tier)
+  const customPrices = config?.packageTierPrices?.[packageId]
+  if (customPrices && customPrices[tierIndex] !== undefined) {
+    return customPrices[tierIndex]
+  }
+  return pkg.tierPrices[tierIndex] ?? pkg.tierPrices[0]
+}
+
+export function calculatePackagePrice(
+  pkg: Package,
+  product: Product,
+  users: number,
+  periodId: string,
+  config?: PricingConfig,
+): PriceBreakdown {
+  const pricePerUser = getPackageTierPrice(pkg.id, users, config)
+  const usersTotal = pricePerUser * users
+
+  const subtotal = usersTotal
+
+  const periodData = PERIOD_DISCOUNTS.find(p => p.id === periodId) ?? PERIOD_DISCOUNTS[0]
+  const periodDiscount = config?.periodDiscounts[periodData.id] ?? periodData.discount
+  const periodDiscountAmount = subtotal * periodDiscount
+  const total = subtotal - periodDiscountAmount
+  const totalAnnual = total * 12
+
+  const setupMultiplier = config?.setupFees[product.id] ?? pkg.setupFeeMultiplier
+  const setupFee = total * setupMultiplier
+
+  return {
+    basePerUser: pricePerUser,
+    discountPercent: 0,
+    discountedPerUser: pricePerUser,
+    usersTotal,
+    addonsTotal: 0,
+    piperhuntCost: 0,
+    subtotal,
+    periodDiscount,
+    periodDiscountAmount,
+    total,
+    totalAnnual,
+    setupFee,
+  }
+}
 
 export function getUserTier(users: number): UserTier {
   for (const tier of USER_TIERS) {
