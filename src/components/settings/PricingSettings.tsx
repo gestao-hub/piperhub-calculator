@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
+import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES, PAYMENT_METHODS } from '@/lib/pricing-data'
 import type { PricingConfig } from '@/lib/pricing-data'
 import { usePricingConfig } from '@/hooks/usePricingConfig'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Save, RotateCcw, ChevronDown, ChevronRight, Package as PackageIcon } from 'lucide-react'
+import { Save, RotateCcw, ChevronDown, ChevronRight, Package as PackageIcon, CreditCard } from 'lucide-react'
 
 export function PricingSettings() {
   const { config, updateConfig, resetConfig } = usePricingConfig()
@@ -86,6 +86,19 @@ export function PricingSettings() {
     }
   }
 
+  function handlePaymentDiscount(methodId: string, value: string) {
+    const num = parseFloat(value) / 100
+    if (!isNaN(num)) {
+      setDraft(prev => ({
+        ...prev,
+        paymentDiscounts: {
+          ...prev.paymentDiscounts,
+          [methodId]: Math.min(1, Math.max(0, num)),
+        },
+      }))
+    }
+  }
+
   function handlePeriodDiscount(periodId: string, value: string) {
     const num = parseFloat(value) / 100
     if (!isNaN(num)) {
@@ -119,6 +132,7 @@ export function PricingSettings() {
       tierDiscounts: USER_TIERS.map(t => t.discount),
       periodDiscounts: Object.fromEntries(PERIOD_DISCOUNTS.map(p => [p.id, p.discount])),
       packageTierPrices: Object.fromEntries(PIPERKEY_PACKAGES.map(p => [p.id, [...p.tierPrices]])),
+      paymentDiscounts: Object.fromEntries(PAYMENT_METHODS.map(m => [m.id, m.discount])),
     })
   }
 
@@ -287,6 +301,41 @@ export function PricingSettings() {
                   max="100"
                   value={((draft.tierDiscounts[index] ?? tier.discount) * 100).toFixed(0)}
                   onChange={(e) => handleTierDiscount(index, e.target.value)}
+                  className="w-20"
+                />
+                <span className="text-xs text-muted-foreground">%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Payment method discounts */}
+      <div className="glass-card rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-2">
+          <CreditCard className="w-5 h-5 text-foreground" />
+          <h3 className="text-base font-display font-bold text-foreground">
+            Descontos por forma de pagamento
+          </h3>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          Aplicados sobre o total final ao demonstrar formas de pagamento ao cliente.
+        </p>
+        <div className="space-y-2">
+          {PAYMENT_METHODS.map((m) => (
+            <div key={m.id} className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-foreground">{m.label}</p>
+                <p className="text-[10px] text-muted-foreground">{m.description}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="100"
+                  value={((draft.paymentDiscounts?.[m.id] ?? m.discount) * 100).toFixed(0)}
+                  onChange={(e) => handlePaymentDiscount(m.id, e.target.value)}
                   className="w-20"
                 />
                 <span className="text-xs text-muted-foreground">%</span>

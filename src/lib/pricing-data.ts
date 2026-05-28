@@ -40,6 +40,98 @@ export interface PricingConfig {
   tierDiscounts: number[]
   periodDiscounts: Record<string, number>
   packageTierPrices: Record<string, number[]>
+  paymentDiscounts: Record<string, number>
+}
+
+export interface PaymentMethod {
+  id: string
+  label: string
+  shortLabel: string
+  description: string
+  icon: 'Zap' | 'FileText' | 'CreditCard' | 'Calendar'
+  discount: number
+}
+
+export const PAYMENT_METHODS: PaymentMethod[] = [
+  {
+    id: 'pix',
+    label: 'PIX a vista',
+    shortLabel: 'PIX',
+    description: 'Pagamento instantaneo, total anual a vista',
+    icon: 'Zap',
+    discount: 0.03,
+  },
+  {
+    id: 'boleto',
+    label: 'Boleto bancario',
+    shortLabel: 'Boleto',
+    description: 'Mensal via boleto compensado em 3 dias',
+    icon: 'FileText',
+    discount: 0.02,
+  },
+  {
+    id: 'card_full',
+    label: 'Cartao a vista (TCV)',
+    shortLabel: 'TCV',
+    description: 'Total anual no cartao em uma cobranca',
+    icon: 'CreditCard',
+    discount: 0.02,
+  },
+  {
+    id: 'card_installments',
+    label: 'Cartao parcelado',
+    shortLabel: 'Parcelado',
+    description: 'Em ate 12x no cartao de credito',
+    icon: 'Calendar',
+    discount: 0,
+  },
+]
+
+export interface PaymentBreakdown {
+  method: PaymentMethod
+  discount: number
+  monthlyAfterDiscount: number
+  totalUpfront: number
+  installmentValue: number
+  installments: number
+}
+
+export function calculatePaymentBreakdowns(
+  baseMonthly: number,
+  config?: PricingConfig,
+): PaymentBreakdown[] {
+  return PAYMENT_METHODS.map(method => {
+    const discount = config?.paymentDiscounts?.[method.id] ?? method.discount
+    const monthlyAfterDiscount = baseMonthly * (1 - discount)
+    const annualAfterDiscount = monthlyAfterDiscount * 12
+
+    let totalUpfront = monthlyAfterDiscount
+    let installmentValue = monthlyAfterDiscount
+    let installments = 1
+
+    if (method.id === 'pix' || method.id === 'card_full') {
+      totalUpfront = annualAfterDiscount
+      installmentValue = annualAfterDiscount
+      installments = 1
+    } else if (method.id === 'boleto') {
+      totalUpfront = monthlyAfterDiscount
+      installmentValue = monthlyAfterDiscount
+      installments = 12
+    } else if (method.id === 'card_installments') {
+      totalUpfront = annualAfterDiscount
+      installments = 12
+      installmentValue = annualAfterDiscount / 12
+    }
+
+    return {
+      method: { ...method, discount },
+      discount,
+      monthlyAfterDiscount,
+      totalUpfront,
+      installmentValue,
+      installments,
+    }
+  })
 }
 
 export interface Package {

@@ -12,6 +12,7 @@ import { formatCurrency, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { PaymentMethodsGrid } from './PaymentMethodsGrid'
 import { FileDown, RotateCcw, Wrench, Building2, Package as PackageIcon } from 'lucide-react'
 
 interface PriceSummaryProps {
@@ -283,6 +284,13 @@ export function PriceSummary({
             </div>
           )}
         </div>
+
+        {/* Payment methods comparison */}
+        <PaymentMethodsGrid
+          product={product}
+          monthlyTotal={breakdown.total}
+          config={config}
+        />
 
         {/* Client data section */}
         <div className="glass-card rounded-xl p-6 mb-6">

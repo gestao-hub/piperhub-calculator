@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
+import { PRODUCTS, USER_TIERS, PERIOD_DISCOUNTS, PIPERKEY_PACKAGES, PAYMENT_METHODS } from '@/lib/pricing-data'
 import type { PricingConfig } from '@/lib/pricing-data'
 
 const STORAGE_KEY = 'piperhub-pricing-config'
@@ -29,7 +29,20 @@ function getDefaultConfig(): PricingConfig {
     packageTierPrices[pkg.id] = [...pkg.tierPrices]
   }
 
-  return { basePrices, setupFees, modulePrices, tierDiscounts, periodDiscounts, packageTierPrices }
+  const paymentDiscounts: Record<string, number> = {}
+  for (const pm of PAYMENT_METHODS) {
+    paymentDiscounts[pm.id] = pm.discount
+  }
+
+  return {
+    basePrices,
+    setupFees,
+    modulePrices,
+    tierDiscounts,
+    periodDiscounts,
+    packageTierPrices,
+    paymentDiscounts,
+  }
 }
 
 function loadConfig(): PricingConfig {
@@ -53,6 +66,7 @@ function loadConfig(): PricingConfig {
         tierDiscounts: parsed.tierDiscounts ?? defaults.tierDiscounts,
         periodDiscounts: { ...defaults.periodDiscounts, ...parsed.periodDiscounts },
         packageTierPrices: { ...defaults.packageTierPrices, ...parsed.packageTierPrices },
+        paymentDiscounts: { ...defaults.paymentDiscounts, ...parsed.paymentDiscounts },
       }
     }
   } catch {

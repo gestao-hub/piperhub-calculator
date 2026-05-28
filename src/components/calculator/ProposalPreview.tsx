@@ -2,6 +2,7 @@ import type { Product, PricingConfig } from '@/lib/pricing-data'
 import {
   calculatePrice,
   calculatePackagePrice,
+  calculatePaymentBreakdowns,
   getUserTier,
   PERIOD_DISCOUNTS,
   PIPERHUNT_TIERS,
@@ -709,6 +710,151 @@ export function ProposalPreview({
           </div>
         </div>
       )}
+
+      {/* ==================== PAYMENT METHODS COMPARISON ==================== */}
+      <div style={{ padding: '0 32px 24px' }}>
+        <h3
+          style={{
+            fontSize: '15px',
+            fontWeight: 700,
+            marginBottom: '14px',
+            color: '#1a1a2e',
+            fontFamily: 'Outfit, Inter, Arial, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Formas de Pagamento
+        </h3>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '10px',
+          }}
+        >
+          {calculatePaymentBreakdowns(breakdown.total, config).map((b) => {
+            const showsDiscount = b.discount > 0
+            const headlineLabel =
+              b.method.id === 'boleto'
+                ? 'Mensal'
+                : b.method.id === 'card_installments'
+                  ? '12x de'
+                  : 'Total a vista'
+            const headlineValue =
+              b.method.id === 'boleto'
+                ? b.monthlyAfterDiscount
+                : b.method.id === 'card_installments'
+                  ? b.installmentValue
+                  : b.totalUpfront
+            const subLabel =
+              b.method.id === 'boleto'
+                ? 'Total anual'
+                : b.method.id === 'card_installments'
+                  ? 'Total'
+                  : 'Equivalente mensal'
+            const subValue =
+              b.method.id === 'boleto'
+                ? b.monthlyAfterDiscount * 12
+                : b.method.id === 'card_installments'
+                  ? b.totalUpfront
+                  : b.monthlyAfterDiscount
+
+            return (
+              <div
+                key={b.method.id}
+                style={{
+                  borderRadius: '10px',
+                  border: `1px solid ${showsDiscount ? primaryMedium : '#e5e7eb'}`,
+                  padding: '14px 16px',
+                  backgroundColor: '#ffffff',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '8px',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        color: '#1f2937',
+                        fontFamily: 'Outfit, Inter, Arial, sans-serif',
+                      }}
+                    >
+                      {b.method.label}
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>
+                      {b.method.description}
+                    </div>
+                  </div>
+                  {showsDiscount && (
+                    <span
+                      style={{
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '8px',
+                        backgroundColor: primaryMedium,
+                        color: primaryColor,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      -{(b.discount * 100).toFixed(0)}%
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    borderTop: '1px solid #f0f1f3',
+                    paddingTop: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline',
+                    }}
+                  >
+                    <span style={{ fontSize: '10px', color: '#6b7280' }}>{headlineLabel}</span>
+                    <span
+                      style={{
+                        fontSize: '15px',
+                        fontWeight: 800,
+                        color: primaryColor,
+                        fontFamily: 'Outfit, Inter, Arial, sans-serif',
+                      }}
+                    >
+                      {fmtCurrency(headlineValue)}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '10px',
+                      color: '#9ca3af',
+                    }}
+                  >
+                    <span>{subLabel}</span>
+                    <span>{fmtCurrency(subValue)}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       {/* ==================== BENEFITS - 2 COLUMN GRID ==================== */}
       <div style={{ padding: '0 32px 24px' }}>
