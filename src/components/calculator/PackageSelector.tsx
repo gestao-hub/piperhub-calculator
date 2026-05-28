@@ -1,14 +1,16 @@
-import { PIPERKEY_PACKAGES, USER_TIERS, getPackageTierPrice } from '@/lib/pricing-data'
+import { PIPERKEY_PACKAGES, USER_TIERS, getPackageTierPrice, getUserTier } from '@/lib/pricing-data'
 import type { Product, PricingConfig } from '@/lib/pricing-data'
 import { formatCurrency, cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Sparkles, Package as PackageIcon, Zap } from 'lucide-react'
+import { Slider } from '@/components/ui/slider'
+import { CheckCircle, Sparkles, Package as PackageIcon, Zap, Users } from 'lucide-react'
 
 interface PackageSelectorProps {
   product: Product
   selectedPackageId: string | null
   onSelect: (packageId: string | null) => void
   users: number
+  onChangeUsers: (users: number) => void
   config?: PricingConfig
 }
 
@@ -40,17 +42,77 @@ export function PackageSelector({
   selectedPackageId,
   onSelect,
   users,
+  onChangeUsers,
   config,
 }: PackageSelectorProps) {
+  const currentTier = getUserTier(users)
+
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <h2 className="text-2xl font-display font-bold text-foreground mb-2">
           Escolha um pacote
         </h2>
         <p className="text-muted-foreground">
           Pacotes prontos com modulos selecionados. Voce tambem pode montar do zero abaixo.
         </p>
+      </div>
+
+      {/* Live users input — drives all package prices below */}
+      <div
+        className="rounded-xl border p-5 mb-6"
+        style={{
+          borderColor: `${product.color.primary}30`,
+          backgroundColor: `${product.color.primary}06`,
+        }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-3 shrink-0">
+            <div
+              className="p-2 rounded-lg"
+              style={{ backgroundColor: `${product.color.primary}15` }}
+            >
+              <Users className="w-5 h-5" style={{ color: product.color.primary }} />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Quantos usuarios?</p>
+              <p className="text-sm font-semibold text-foreground">
+                Faixa atual: {currentTier.label}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-center gap-3">
+            <Slider
+              value={[users]}
+              onValueChange={(val) => onChangeUsers(val[0])}
+              min={1}
+              max={100}
+              step={1}
+              className="flex-1"
+              style={
+                {
+                  '--slider-color': product.color.primary,
+                } as React.CSSProperties
+              }
+            />
+            <div className="flex items-center gap-1.5 shrink-0">
+              <input
+                type="number"
+                min={1}
+                max={200}
+                value={users}
+                onChange={(e) => {
+                  const num = parseInt(e.target.value, 10)
+                  if (!isNaN(num) && num >= 1) onChangeUsers(Math.min(num, 200))
+                }}
+                className="w-16 text-center text-base font-bold rounded-md border border-border bg-card px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                style={{ borderColor: `${product.color.primary}40` }}
+              />
+              <span className="text-xs text-muted-foreground">usuarios</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">

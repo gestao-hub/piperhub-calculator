@@ -168,6 +168,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
                 selectedPackageId={selectedPackageId}
                 onSelect={handleSelectPackage}
                 users={users}
+                onChangeUsers={setUsers}
                 config={config}
               />
             )}
