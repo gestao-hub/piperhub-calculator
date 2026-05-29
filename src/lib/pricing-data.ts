@@ -338,7 +338,7 @@ export const PIPERKEY_PACKAGES: Package[] = [
     tagline: 'O essencial para operar',
     description: 'CRM completo, agenda, monitoramento, analytics, contatos, pipeline financeiro, propriedades, empreendimentos e subpagina da imobiliaria.',
     moduleIds: PACOTE_1_MODULES,
-    tierPrices: [197, 177, 167, 157, 147],
+    tierPrices: [347, 312, 295, 278, 260],
     setupFeeMultiplier: 2.5,
   },
   {
@@ -348,7 +348,7 @@ export const PIPERKEY_PACKAGES: Package[] = [
     tagline: 'Essencial + Inteligencia Artificial',
     description: 'Tudo do Pacote Essencial + Agentes de IA + Assistente de IA para automacao e produtividade.',
     moduleIds: PACOTE_2_MODULES,
-    tierPrices: [347, 317, 297, 277, 257],
+    tierPrices: [497, 447, 422, 397, 372],
     setupFeeMultiplier: 2.5,
     highlight: true,
   },
@@ -359,7 +359,7 @@ export const PIPERKEY_PACKAGES: Package[] = [
     tagline: 'Tudo do PiperKey',
     description: 'Tudo do Pacote IA + Pos-venda + Gestao de Aluguel + Campanhas WhatsApp.',
     moduleIds: PACOTE_3_MODULES,
-    tierPrices: [497, 457, 427, 397, 367],
+    tierPrices: [547, 492, 465, 437, 410],
     setupFeeMultiplier: 2.5,
   },
 ]
