@@ -173,7 +173,7 @@ export function PricingSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-foreground block mb-2">
-                      Preco base (R$/usuario/mes)
+                      Preço base (R$/usuário/mês)
                     </label>
                     <Input
                       type="number"
@@ -185,7 +185,7 @@ export function PricingSettings() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground block mb-2">
-                      Multiplicador implantacao (x mensalidade)
+                      Multiplicador implantação (x mensalidade)
                     </label>
                     <Input
                       type="number"
@@ -203,7 +203,7 @@ export function PricingSettings() {
                 {/* Module prices */}
                 <div>
                   <h4 className="text-sm font-medium text-foreground mb-3">
-                    Precos dos modulos
+                    Preços dos módulos
                   </h4>
                   <div className="space-y-2">
                     {product.modules.map((mod) => (
@@ -234,11 +234,11 @@ export function PricingSettings() {
         <div className="flex items-center gap-2 mb-4">
           <PackageIcon className="w-5 h-5 text-foreground" />
           <h3 className="text-base font-display font-bold text-foreground">
-            Pacotes PiperKey - preco por faixa de usuarios
+            Pacotes PiperKey - preço por faixa de usuários
           </h3>
         </div>
         <p className="text-xs text-muted-foreground mb-4">
-          Cada pacote tem um preco R$/usuario/mes diferente para cada faixa. Edite os valores abaixo.
+          Cada pacote tem um preço R$/usuário/mês diferente para cada faixa. Edite os valores abaixo.
         </p>
 
         <div className="space-y-6">
@@ -252,7 +252,7 @@ export function PricingSettings() {
                     <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {pkg.moduleIds.length} modulos
+                    {pkg.moduleIds.length} módulos
                   </p>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -273,7 +273,7 @@ export function PricingSettings() {
                         />
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-1">
-                        Padrao: {formatCurrency(pkg.tierPrices[idx])}
+                        Padrão: {formatCurrency(pkg.tierPrices[idx])}
                       </p>
                     </div>
                   ))}
@@ -348,7 +348,7 @@ export function PricingSettings() {
       {/* Period discounts */}
       <div className="glass-card rounded-xl p-5">
         <h3 className="text-base font-display font-bold text-foreground mb-4">
-          Descontos por periodo
+          Descontos por período
         </h3>
         <div className="space-y-2">
           {PERIOD_DISCOUNTS.map((p) => (
@@ -375,7 +375,7 @@ export function PricingSettings() {
       <div className="flex gap-4">
         <Button onClick={handleSave} size="lg" className="flex-1">
           <Save className="w-5 h-5" />
-          {saved ? 'Salvo!' : 'Salvar configuracoes'}
+          {saved ? 'Salvo!' : 'Salvar configurações'}
         </Button>
         <Button onClick={handleReset} variant="outline" size="lg">
           <RotateCcw className="w-5 h-5" />

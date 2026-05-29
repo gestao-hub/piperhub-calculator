@@ -15,7 +15,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-xl font-display font-bold text-foreground">
-            Configuracoes de Precos
+            Configurações de Preços
           </h1>
         </div>
       </header>

@@ -61,8 +61,8 @@ export function ProposalPreview({
 
   const benefits = [
     'Mensagens ilimitadas',
-    'Suporte tecnico',
-    'Atualizacoes inclusas',
+    'Suporte técnico',
+    'Atualizações inclusas',
     'Setup e treinamento',
     'Sem fidelidade',
     'Onboarding dedicado',
@@ -125,7 +125,7 @@ export function ProposalPreview({
                 fontWeight: 400,
               }}
             >
-              {product.name} - Solucao completa
+              {product.name} - Solução completa
             </div>
           </div>
           <div
@@ -208,7 +208,7 @@ export function ProposalPreview({
             letterSpacing: '0.5px',
           }}
         >
-          Configuracao Selecionada
+          Configuração Selecionada
         </h3>
 
         {selectedPackage && (
@@ -259,7 +259,7 @@ export function ProposalPreview({
                   fontSize: '12px',
                 }}
               >
-                Modulo
+                Módulo
               </th>
               <th
                 style={{
@@ -271,7 +271,7 @@ export function ProposalPreview({
                   fontSize: '12px',
                 }}
               >
-                {selectedPackage ? 'Incluso' : 'Valor/mes'}
+                {selectedPackage ? 'Incluso' : 'Valor/mês'}
               </th>
             </tr>
           </thead>
@@ -355,7 +355,7 @@ export function ProposalPreview({
               backgroundColor: '#ffffff',
             }}
           >
-            <span style={{ color: '#6b7280', fontSize: '12px' }}>Usuarios</span>
+            <span style={{ color: '#6b7280', fontSize: '12px' }}>Usuários</span>
             <span style={{ fontWeight: 600, fontSize: '12px', color: '#1f2937' }}>
               {users} ({tier.label})
             </span>
@@ -428,7 +428,7 @@ export function ProposalPreview({
                   backgroundColor: '#fafbfc',
                 }}
               >
-                <span style={{ color: '#6b7280', fontSize: '12px' }}>Total modulos selecionados</span>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Total módulos selecionados</span>
                 <span style={{ fontWeight: 500, fontSize: '12px', color: '#1f2937' }}>
                   {fmtCurrency(breakdown.addonsTotal)}
                 </span>
@@ -548,7 +548,7 @@ export function ProposalPreview({
                 fontFamily: 'Outfit, Inter, Arial, sans-serif',
               }}
             >
-              Taxa de Implantacao (pagamento unico)
+              Taxa de Implantação (pagamento único)
             </div>
             <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '3px' }}>
               Setup completo + treinamento da equipe
@@ -581,7 +581,7 @@ export function ProposalPreview({
               letterSpacing: '0.5px',
             }}
           >
-            PiperHunt - Tabela de Creditos
+            PiperHunt - Tabela de Créditos
           </h3>
 
           <table
@@ -618,7 +618,7 @@ export function ProposalPreview({
                     fontSize: '12px',
                   }}
                 >
-                  Preco/CNPJ
+                  Preço/CNPJ
                 </th>
                 <th
                   style={{
@@ -630,7 +630,7 @@ export function ProposalPreview({
                     fontSize: '12px',
                   }}
                 >
-                  Custo maximo
+                  Custo máximo
                 </th>
               </tr>
             </thead>
@@ -869,7 +869,7 @@ export function ProposalPreview({
             letterSpacing: '0.5px',
           }}
         >
-          O que esta incluso
+          O que está incluso
         </h3>
         <div
           style={{
@@ -937,7 +937,7 @@ export function ProposalPreview({
           }}
         >
           <span style={{ fontSize: '10px', color: '#b0b5be', fontWeight: 400 }}>
-            PiperHub | Proposta valida por 30 dias
+            PiperHub | Proposta válida por 30 dias
           </span>
         </div>
       </div>

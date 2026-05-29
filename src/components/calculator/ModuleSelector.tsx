@@ -89,10 +89,10 @@ export function ModuleSelector({
     <div className="animate-fade-in">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-          Configure seus modulos
+          Configure seus módulos
         </h2>
         <p className="text-muted-foreground">
-          Selecione os modulos que precisar para sua operacao.
+          Selecione os módulos que precisar para sua operação.
         </p>
       </div>
 
@@ -163,7 +163,7 @@ export function ModuleSelector({
                   className="text-sm font-semibold"
                   style={{ color: product.color.primary }}
                 >
-                  {formatCurrency(mod.price)}/mes
+                  {formatCurrency(mod.price)}/mês
                 </span>
               )}
             </div>
@@ -186,14 +186,14 @@ export function ModuleSelector({
               className="text-base font-display font-bold"
               style={{ color: product.color.primary }}
             >
-              PiperHunt - Configuracao de Creditos
+              PiperHunt - Configuração de Créditos
             </h3>
           </div>
 
           {/* CNPJ quantity input */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Quantidade estimada de CNPJs/mes
+              Quantidade estimada de CNPJs/mês
             </label>
             <input
               type="number"
@@ -221,7 +221,7 @@ export function ModuleSelector({
                 className="text-sm font-bold"
                 style={{ color: product.color.primary }}
               >
-                {formatCurrency(piperhuntCost)}/mes
+                {formatCurrency(piperhuntCost)}/mês
               </p>
             </div>
           </div>
@@ -239,10 +239,10 @@ export function ModuleSelector({
                       Faixa
                     </th>
                     <th className="text-right px-4 py-2 text-xs font-semibold text-muted-foreground">
-                      Preco/CNPJ
+                      Preço/CNPJ
                     </th>
                     <th className="text-right px-4 py-2 text-xs font-semibold text-muted-foreground">
-                      Custo maximo
+                      Custo máximo
                     </th>
                   </tr>
                 </thead>
@@ -314,9 +314,9 @@ export function ModuleSelector({
           className="mt-6 p-4 rounded-xl border text-center"
           style={{ borderColor: `${product.color.primary}40`, backgroundColor: `${product.color.primary}08` }}
         >
-          <span className="text-sm text-muted-foreground">Total de modulos selecionados: </span>
+          <span className="text-sm text-muted-foreground">Total de módulos selecionados: </span>
           <span className="text-lg font-bold" style={{ color: product.color.primary }}>
-            {formatCurrency(modulesTotal)}/mes
+            {formatCurrency(modulesTotal)}/mês
           </span>
         </div>
       )}

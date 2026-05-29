@@ -102,7 +102,7 @@ export function PriceSummary({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">
-                    {users} usuarios x {formatCurrency(breakdown.basePerUser)} ({tier.label})
+                    {users} usuários x {formatCurrency(breakdown.basePerUser)} ({tier.label})
                   </span>
                   <span className="text-sm font-medium text-foreground">
                     {formatCurrency(breakdown.usersTotal)}
@@ -110,7 +110,7 @@ export function PriceSummary({
                 </div>
                 <div className="pt-1">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    Inclui {selectedPackage.moduleIds.length} modulos
+                    Inclui {selectedPackage.moduleIds.length} módulos
                   </p>
                 </div>
               </>
@@ -119,7 +119,7 @@ export function PriceSummary({
                 {/* Base */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">
-                    Base ({users} usuarios x {formatCurrency(breakdown.basePerUser)})
+                    Base ({users} usuários x {formatCurrency(breakdown.basePerUser)})
                   </span>
                   <span className="text-sm font-medium text-foreground">
                     {formatCurrency(breakdown.basePerUser * users)}
@@ -140,16 +140,16 @@ export function PriceSummary({
 
                 {/* After discount subtotal for users */}
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Subtotal usuarios</span>
+                  <span className="text-muted-foreground">Subtotal usuários</span>
                   <span className="font-medium text-foreground">{formatCurrency(breakdown.usersTotal)}</span>
                 </div>
 
-                {/* Modulos selecionados */}
+                {/* Módulos selecionados */}
                 {selectedModules.length > 0 && (
                   <>
                     <Separator className="my-2" />
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Modulos selecionados
+                      Módulos selecionados
                     </p>
                     {selectedModules.map((mod) => {
                       const isPiperhunt = mod.id === 'pl-piperhunt'
@@ -178,7 +178,7 @@ export function PriceSummary({
                       )
                     })}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-muted-foreground">Total modulos</span>
+                      <span className="text-sm font-medium text-muted-foreground">Total módulos</span>
                       <span className="text-sm font-medium text-foreground">
                         {formatCurrency(breakdown.addonsTotal + breakdown.piperhuntCost)}
                       </span>
@@ -193,7 +193,7 @@ export function PriceSummary({
 
           {/* Period selector */}
           <div className="mb-6">
-            <p className="text-sm font-medium text-foreground mb-3">Periodo de contratacao</p>
+            <p className="text-sm font-medium text-foreground mb-3">Período de contratação</p>
             <div className="flex gap-2">
               {PERIOD_DISCOUNTS.map((p) => (
                 <button
@@ -229,7 +229,7 @@ export function PriceSummary({
             {breakdown.periodDiscount > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  Desconto periodo (-{(breakdown.periodDiscount * 100).toFixed(0)}%)
+                  Desconto período (-{(breakdown.periodDiscount * 100).toFixed(0)}%)
                 </span>
                 <span className="text-sm font-medium text-success">
                   -{formatCurrency(breakdown.periodDiscountAmount)}
@@ -264,7 +264,7 @@ export function PriceSummary({
           <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border/50">
             <div className="flex items-center gap-3">
               <Wrench className="w-5 h-5 text-muted-foreground shrink-0" />
-              <p className="text-sm font-semibold text-foreground">Taxa de implantacao</p>
+              <p className="text-sm font-semibold text-foreground">Taxa de implantação</p>
             </div>
             <span
               className="text-lg font-display font-bold"
@@ -325,7 +325,7 @@ export function PriceSummary({
             size="lg"
           >
             <RotateCcw className="w-5 h-5" />
-            Nova simulacao
+            Nova simulação
           </Button>
         </div>
       </div>

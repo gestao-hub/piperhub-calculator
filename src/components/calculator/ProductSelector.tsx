@@ -16,7 +16,7 @@ export function ProductSelector({ selectedProductId, onSelect }: ProductSelector
           Escolha seu produto
         </h2>
         <p className="text-muted-foreground">
-          Selecione a plataforma ideal para o seu negocio
+          Selecione a plataforma ideal para o seu negócio
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function ProductSelector({ selectedProductId, onSelect }: ProductSelector
 
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
-                  {product.modules.length} modulos disponiveis
+                  {product.modules.length} módulos disponíveis
                 </Badge>
               </div>
             </button>

@@ -19,8 +19,8 @@ interface CalculatorPageProps {
 
 const STEPS = [
   { num: 1, label: 'Produto' },
-  { num: 2, label: 'Modulos' },
-  { num: 3, label: 'Usuarios' },
+  { num: 2, label: 'Módulos' },
+  { num: 3, label: 'Usuários' },
   { num: 4, label: 'Proposta' },
 ]
 
@@ -93,7 +93,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
           <div className="flex items-center gap-3">
             <img src="/piperhub-icon-white.png" alt="PiperHub" className="h-8 w-auto" />
             <h1 className="text-xl font-display font-bold text-foreground">
-              Calculadora de Precos
+              Calculadora de Preços
             </h1>
           </div>
           <Button
@@ -228,7 +228,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
               onClick={() => setCurrentStep(s => s + 1)}
               disabled={!canProceed}
             >
-              Proximo
+              Próximo
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}

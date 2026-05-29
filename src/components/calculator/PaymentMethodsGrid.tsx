@@ -119,7 +119,7 @@ export function PaymentMethodsGrid({ product, monthlyTotal, config }: PaymentMet
                 ) : (
                   <>
                     <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-muted-foreground">Total a vista</span>
+                      <span className="text-xs text-muted-foreground">Total à vista</span>
                       <span
                         className="text-base font-bold"
                         style={{ color: product.color.primary }}

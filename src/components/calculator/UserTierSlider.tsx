@@ -26,10 +26,10 @@ export function UserTierSlider({ users, onChange, product }: UserTierSliderProps
     <div className="animate-fade-in">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-          Quantos usuarios?
+          Quantos usuários?
         </h2>
         <p className="text-muted-foreground">
-          Quanto mais usuarios, maior o desconto por volume
+          Quanto mais usuários, maior o desconto por volume
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export function UserTierSlider({ users, onChange, product }: UserTierSliderProps
                   className="w-24 text-center text-lg font-bold"
                   style={{ borderColor: `${product.color.primary}40` }}
                 />
-                <span className="text-sm text-muted-foreground">usuarios</span>
+                <span className="text-sm text-muted-foreground">usuários</span>
               </div>
               <span className="text-sm text-muted-foreground">100+</span>
             </div>

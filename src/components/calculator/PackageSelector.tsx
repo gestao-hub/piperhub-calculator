@@ -29,11 +29,11 @@ const MODULE_LABELS: Record<string, string> = {
   'pk-pipeline-financeiro': 'Pipeline Financeiro',
   'pk-propriedades': 'Propriedades',
   'pk-empreendimentos': 'Empreendimentos',
-  'pk-subpagina': 'Subpagina da Imobiliaria',
+  'pk-subpagina': 'Subpágina da Imobiliária',
   'pk-agentes-ia': 'Agentes de IA',
   'pk-assistente-ia': 'Assistente de IA',
-  'pk-pos-venda': 'Pos-Venda',
-  'pk-gestao-aluguel': 'Gestao de Aluguel',
+  'pk-pos-venda': 'Pós-Venda',
+  'pk-gestao-aluguel': 'Gestão de Aluguel',
   'pk-campanhas-whatsapp': 'Campanhas WhatsApp',
 }
 
@@ -54,7 +54,7 @@ export function PackageSelector({
           Escolha um pacote
         </h2>
         <p className="text-muted-foreground">
-          Pacotes prontos com modulos selecionados. Voce tambem pode montar do zero abaixo.
+          Pacotes prontos com módulos selecionados. Você também pode montar do zero abaixo.
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export function PackageSelector({
               <Users className="w-5 h-5" style={{ color: product.color.primary }} />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Quantos usuarios?</p>
+              <p className="text-xs text-muted-foreground">Quantos usuários?</p>
               <p className="text-sm font-semibold text-foreground">
                 Faixa atual: {currentTier.label}
               </p>
@@ -109,7 +109,7 @@ export function PackageSelector({
                 className="w-16 text-center text-base font-bold rounded-md border border-border bg-card px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 style={{ borderColor: `${product.color.primary}40` }}
               />
-              <span className="text-xs text-muted-foreground">usuarios</span>
+              <span className="text-xs text-muted-foreground">usuários</span>
             </div>
           </div>
         </div>
@@ -187,10 +187,10 @@ export function PackageSelector({
                   >
                     {formatCurrency(pricePerUser)}
                   </span>
-                  <span className="text-xs text-muted-foreground">/usuario/mes</span>
+                  <span className="text-xs text-muted-foreground">/usuário/mês</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {users} usuarios = {formatCurrency(total)}/mes
+                  {users} usuários = {formatCurrency(total)}/mês
                 </p>
               </div>
 
