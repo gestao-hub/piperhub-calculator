@@ -1,6 +1,12 @@
-import { useState, useCallback } from 'react'
-import { PRODUCTS, PIPERKEY_PACKAGES } from '@/lib/pricing-data'
-import type { Product } from '@/lib/pricing-data'
+import { useState, useCallback, useMemo } from 'react'
+import {
+  PRODUCTS,
+  PIPERKEY_PACKAGES,
+  EMPTY_PROPOSAL_EDITS,
+  DEFAULT_PROPOSAL_BENEFITS,
+  buildProposalComputed,
+} from '@/lib/pricing-data'
+import type { Product, ProposalEdits, ProposalData } from '@/lib/pricing-data'
 import { generatePDF } from '@/lib/pdf-generator'
 import { usePricingConfig } from '@/hooks/usePricingConfig'
 import { cn } from '@/lib/utils'
@@ -30,18 +36,31 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
   const [selectedModuleIds, setSelectedModuleIds] = useState<string[]>([])
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
   const [users, setUsers] = useState(5)
-  const [period, setPeriod] = useState('monthly')
   const [piperhuntCnpjs, setPiperhuntCnpjs] = useState(200)
   const [companyName, setCompanyName] = useState('')
+  const [edits, setEdits] = useState<ProposalEdits>(EMPTY_PROPOSAL_EDITS)
   const { config } = usePricingConfig()
 
   const selectedProduct: Product | undefined = PRODUCTS.find(p => p.id === selectedProductId)
+
+  // Sempre que a configuração de preço base muda, descarta valores sobrescritos
+  // manualmente para evitar números desatualizados na proposta.
+  const clearValueEdits = useCallback(() => {
+    setEdits(prev => ({
+      ...prev,
+      monthly: null,
+      semiannual: null,
+      annual: null,
+      setupFee: null,
+    }))
+  }, [])
 
   const handleSelectProduct = useCallback((productId: string) => {
     setSelectedProductId(productId)
     setSelectedModuleIds([])
     setSelectedPackageId(null)
-  }, [])
+    clearValueEdits()
+  }, [clearValueEdits])
 
   const handleSelectPackage = useCallback((packageId: string | null) => {
     setSelectedPackageId(packageId)
@@ -51,7 +70,8 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
     } else {
       setSelectedModuleIds([])
     }
-  }, [])
+    clearValueEdits()
+  }, [clearValueEdits])
 
   const handleToggleModule = useCallback((moduleId: string) => {
     setSelectedPackageId(null)
@@ -60,7 +80,25 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
         ? prev.filter(id => id !== moduleId)
         : [...prev, moduleId]
     )
-  }, [])
+    clearValueEdits()
+  }, [clearValueEdits])
+
+  const handleChangeUsers = useCallback((n: number) => {
+    setUsers(n)
+    clearValueEdits()
+  }, [clearValueEdits])
+
+  const handleChangePiperhuntCnpjs = useCallback((n: number) => {
+    setPiperhuntCnpjs(n)
+    clearValueEdits()
+  }, [clearValueEdits])
+
+  const handleChangeEdit = useCallback(
+    <K extends keyof ProposalEdits>(field: K, value: ProposalEdits[K]) => {
+      setEdits(prev => ({ ...prev, [field]: value }))
+    },
+    [],
+  )
 
   const handleExportPDF = useCallback(async () => {
     if (!selectedProduct) return
@@ -74,10 +112,49 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
     setSelectedModuleIds([])
     setSelectedPackageId(null)
     setUsers(5)
-    setPeriod('monthly')
     setPiperhuntCnpjs(200)
     setCompanyName('')
+    setEdits(EMPTY_PROPOSAL_EDITS)
   }, [])
+
+  // Valores calculados + dados finais da proposta (com edições aplicadas)
+  const computed = useMemo(
+    () =>
+      selectedProduct
+        ? buildProposalComputed(
+            selectedProduct,
+            selectedModuleIds,
+            selectedPackageId,
+            users,
+            config,
+            piperhuntCnpjs,
+          )
+        : null,
+    [selectedProduct, selectedModuleIds, selectedPackageId, users, config, piperhuntCnpjs],
+  )
+
+  const proposalData: ProposalData | null = useMemo(() => {
+    if (!computed) return null
+    const benefits =
+      edits.benefits !== null
+        ? edits.benefits.split(',').map(s => s.trim()).filter(Boolean)
+        : DEFAULT_PROPOSAL_BENEFITS
+    return {
+      title: edits.title ?? 'Proposta Comercial',
+      companyName,
+      users,
+      tierLabel: computed.tierLabel,
+      packageName: computed.packageName,
+      monthly: edits.monthly ?? computed.monthly,
+      semiannual: edits.semiannual ?? computed.semiannual,
+      annual: edits.annual ?? computed.annual,
+      semiannualDiscount: computed.semiannualDiscount,
+      annualDiscount: computed.annualDiscount,
+      setupFee: edits.setupFee ?? computed.setupFee,
+      validity: edits.validity ?? '30 dias',
+      benefits,
+    }
+  }, [computed, edits, companyName, users])
 
   const canProceed =
     currentStep === 1 ? selectedProductId !== null :
@@ -168,7 +245,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
                 selectedPackageId={selectedPackageId}
                 onSelect={handleSelectPackage}
                 users={users}
-                onChangeUsers={setUsers}
+                onChangeUsers={handleChangeUsers}
                 config={config}
               />
             )}
@@ -177,7 +254,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
               selectedModuleIds={selectedModuleIds}
               onToggle={handleToggleModule}
               piperhuntCnpjs={piperhuntCnpjs}
-              onChangePiperhuntCnpjs={setPiperhuntCnpjs}
+              onChangePiperhuntCnpjs={handleChangePiperhuntCnpjs}
             />
           </>
         )}
@@ -185,25 +262,23 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
         {currentStep === 3 && selectedProduct && (
           <UserTierSlider
             users={users}
-            onChange={setUsers}
+            onChange={handleChangeUsers}
             product={selectedProduct}
           />
         )}
 
-        {currentStep === 4 && selectedProduct && (
+        {currentStep === 4 && selectedProduct && computed && proposalData && (
           <PriceSummary
             product={selectedProduct}
-            selectedModuleIds={selectedModuleIds}
-            selectedPackageId={selectedPackageId}
-            users={users}
-            period={period}
-            onChangePeriod={setPeriod}
+            data={proposalData}
+            computed={computed}
+            edits={edits}
+            onChangeEdit={handleChangeEdit}
+            onChangeCompanyName={setCompanyName}
+            onResetValues={clearValueEdits}
             onExportPDF={handleExportPDF}
             onReset={handleReset}
             config={config}
-            piperhuntCnpjs={piperhuntCnpjs}
-            companyName={companyName}
-            onChangeCompanyName={setCompanyName}
           />
         )}
       </div>
@@ -236,16 +311,11 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
       </div>
 
       {/* Hidden proposal for PDF */}
-      {selectedProduct && (
+      {selectedProduct && proposalData && (
         <ProposalPreview
           product={selectedProduct}
-          selectedModuleIds={selectedModuleIds}
-          selectedPackageId={selectedPackageId}
-          users={users}
-          period={period}
+          data={proposalData}
           config={config}
-          piperhuntCnpjs={piperhuntCnpjs}
-          companyName={companyName}
         />
       )}
     </div>

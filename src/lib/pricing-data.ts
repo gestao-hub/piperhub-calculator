@@ -425,6 +425,113 @@ export function getUserTier(users: number): UserTier {
   return USER_TIERS[0]
 }
 
+/** Benefícios padrão exibidos na proposta (curtos, para caber em 1 folha). */
+export const DEFAULT_PROPOSAL_BENEFITS = [
+  'Suporte técnico',
+  'Setup e treinamento',
+  'Atualizações inclusas',
+  'Sem fidelidade',
+]
+
+/** Valores calculados que alimentam a proposta (mensal/semestral/anual + taxa). */
+export interface ProposalComputed {
+  subtotalMonthly: number
+  monthly: number
+  semiannual: number
+  annual: number
+  semiannualDiscount: number
+  annualDiscount: number
+  setupFee: number
+  tierLabel: string
+  packageName?: string
+}
+
+/** Edições manuais sobrescrevendo os valores calculados (null = usar o calculado). */
+export interface ProposalEdits {
+  title: string | null
+  validity: string | null
+  benefits: string | null
+  monthly: number | null
+  semiannual: number | null
+  annual: number | null
+  setupFee: number | null
+}
+
+export const EMPTY_PROPOSAL_EDITS: ProposalEdits = {
+  title: null,
+  validity: null,
+  benefits: null,
+  monthly: null,
+  semiannual: null,
+  annual: null,
+  setupFee: null,
+}
+
+/** Dados finais (já com edições manuais aplicadas) renderizados no PDF. */
+export interface ProposalData {
+  title: string
+  companyName: string
+  users: number
+  tierLabel: string
+  packageName?: string
+  monthly: number
+  semiannual: number
+  annual: number
+  semiannualDiscount: number
+  annualDiscount: number
+  setupFee: number
+  validity: string
+  benefits: string[]
+}
+
+/**
+ * Calcula os valores padrão da proposta independentemente do período selecionado:
+ * o preço mensal "cheio" e os equivalentes mensais nos planos semestral e anual,
+ * mais a taxa de implantação. Tudo pode ser sobrescrito manualmente depois.
+ */
+export function buildProposalComputed(
+  product: Product,
+  selectedModuleIds: string[],
+  selectedPackageId: string | null | undefined,
+  users: number,
+  config?: PricingConfig,
+  piperhuntCnpjs?: number,
+): ProposalComputed {
+  const selectedPackage = selectedPackageId
+    ? PIPERKEY_PACKAGES.find(p => p.id === selectedPackageId)
+    : undefined
+
+  const base = selectedPackage
+    ? calculatePackagePrice(selectedPackage, product, users, 'monthly', config)
+    : calculatePrice(product, selectedModuleIds, users, 'monthly', config, piperhuntCnpjs)
+
+  const subtotalMonthly = base.subtotal
+
+  const semiannualDiscount =
+    config?.periodDiscounts?.['semiannual'] ??
+    PERIOD_DISCOUNTS.find(p => p.id === 'semiannual')?.discount ??
+    0.1
+  const annualDiscount =
+    config?.periodDiscounts?.['annual'] ??
+    PERIOD_DISCOUNTS.find(p => p.id === 'annual')?.discount ??
+    0.15
+
+  const setupMultiplier =
+    config?.setupFees?.[product.id] ?? selectedPackage?.setupFeeMultiplier ?? 2.5
+
+  return {
+    subtotalMonthly,
+    monthly: subtotalMonthly,
+    semiannual: subtotalMonthly * (1 - semiannualDiscount),
+    annual: subtotalMonthly * (1 - annualDiscount),
+    semiannualDiscount,
+    annualDiscount,
+    setupFee: subtotalMonthly * setupMultiplier,
+    tierLabel: getUserTier(users).label,
+    packageName: selectedPackage?.name,
+  }
+}
+
 export function calculatePrice(
   product: Product,
   selectedModuleIds: string[],

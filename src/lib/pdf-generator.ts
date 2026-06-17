@@ -4,12 +4,13 @@ export async function generatePDF(filename: string) {
   const element = document.getElementById('proposal-content')
   if (!element) return
   const prev = element.style.display
-  element.style.display = 'block'
+  // O layout usa flex-column (rodapé fixado embaixo via margin-top:auto)
+  element.style.display = 'flex'
   element.style.position = 'relative'
   element.style.left = '0'
 
   const options = {
-    margin: [10, 0, 10, 0],
+    margin: [0, 0, 0, 0],
     filename,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
