@@ -4,6 +4,7 @@ import type {
   ProposalData,
   ProposalComputed,
   ProposalEdits,
+  PaymentOverrides,
 } from '@/lib/pricing-data'
 import { formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,8 @@ interface PriceSummaryProps {
   onExportPDF: () => void
   onReset: () => void
   config?: PricingConfig
+  paymentOverrides?: PaymentOverrides
+  onChangePaymentOverrides: (next: PaymentOverrides) => void
 }
 
 function round2(n: number): number {
@@ -97,6 +100,8 @@ export function PriceSummary({
   onExportPDF,
   onReset,
   config,
+  paymentOverrides,
+  onChangePaymentOverrides,
 }: PriceSummaryProps) {
   const hasValueEdits =
     edits.monthly !== null ||
@@ -257,11 +262,13 @@ export function PriceSummary({
           </div>
         </div>
 
-        {/* Payment methods preview (sobre o plano anual) */}
+        {/* Formas de pagamento editáveis (sobre o plano anual) */}
         <PaymentMethodsGrid
           product={product}
           monthlyTotal={data.annual}
           config={config}
+          overrides={paymentOverrides}
+          onChangeOverrides={onChangePaymentOverrides}
         />
 
         {/* Action buttons */}

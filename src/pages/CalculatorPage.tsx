@@ -6,7 +6,7 @@ import {
   DEFAULT_PROPOSAL_BENEFITS,
   buildProposalComputed,
 } from '@/lib/pricing-data'
-import type { Product, ProposalEdits, ProposalData } from '@/lib/pricing-data'
+import type { Product, ProposalEdits, ProposalData, PaymentOverrides } from '@/lib/pricing-data'
 import { generatePDF } from '@/lib/pdf-generator'
 import { usePricingConfig } from '@/hooks/usePricingConfig'
 import { cn } from '@/lib/utils'
@@ -39,6 +39,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
   const [piperhuntCnpjs, setPiperhuntCnpjs] = useState(200)
   const [companyName, setCompanyName] = useState('')
   const [edits, setEdits] = useState<ProposalEdits>(EMPTY_PROPOSAL_EDITS)
+  const [paymentOverrides, setPaymentOverrides] = useState<PaymentOverrides>({})
   const { config } = usePricingConfig()
 
   const selectedProduct: Product | undefined = PRODUCTS.find(p => p.id === selectedProductId)
@@ -53,6 +54,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
       annual: null,
       setupFee: null,
     }))
+    setPaymentOverrides({})
   }, [])
 
   const handleSelectProduct = useCallback((productId: string) => {
@@ -115,6 +117,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
     setPiperhuntCnpjs(200)
     setCompanyName('')
     setEdits(EMPTY_PROPOSAL_EDITS)
+    setPaymentOverrides({})
   }, [])
 
   // Valores calculados + dados finais da proposta (com edições aplicadas)
@@ -279,6 +282,8 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
             onExportPDF={handleExportPDF}
             onReset={handleReset}
             config={config}
+            paymentOverrides={paymentOverrides}
+            onChangePaymentOverrides={setPaymentOverrides}
           />
         )}
       </div>
@@ -316,6 +321,7 @@ export function CalculatorPage({ onOpenSettings }: CalculatorPageProps) {
           product={selectedProduct}
           data={proposalData}
           config={config}
+          paymentOverrides={paymentOverrides}
         />
       )}
     </div>

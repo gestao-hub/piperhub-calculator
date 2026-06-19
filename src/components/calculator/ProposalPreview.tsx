@@ -1,17 +1,19 @@
-import type { Product, PricingConfig, ProposalData } from '@/lib/pricing-data'
+import type { Product, PricingConfig, ProposalData, PaymentOverrides } from '@/lib/pricing-data'
 import { calculatePaymentBreakdowns } from '@/lib/pricing-data'
+import { formatPercent } from '@/lib/utils'
 
 interface ProposalPreviewProps {
   product: Product
   data: ProposalData
   config?: PricingConfig
+  paymentOverrides?: PaymentOverrides
 }
 
 function fmtCurrency(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-export function ProposalPreview({ product, data, config }: ProposalPreviewProps) {
+export function ProposalPreview({ product, data, config, paymentOverrides }: ProposalPreviewProps) {
   const today = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',
@@ -23,7 +25,7 @@ export function ProposalPreview({ product, data, config }: ProposalPreviewProps)
   const primaryMedium = `${primaryColor}20`
 
   // Formas de pagamento calculadas sobre o valor do plano anual (melhor preço).
-  const paymentBreakdowns = calculatePaymentBreakdowns(data.annual, config)
+  const paymentBreakdowns = calculatePaymentBreakdowns(data.annual, config, paymentOverrides)
 
   const plans = [
     {
@@ -354,7 +356,7 @@ export function ProposalPreview({ product, data, config }: ProposalPreviewProps)
               b.method.id === 'boleto'
                 ? 'Mensal'
                 : b.method.id === 'card_installments'
-                  ? '12x de'
+                  ? `${b.installments}x de`
                   : 'Total à vista'
             const headlineValue =
               b.method.id === 'boleto'
@@ -370,10 +372,14 @@ export function ProposalPreview({ product, data, config }: ProposalPreviewProps)
                   : 'Equivalente mensal'
             const subValue =
               b.method.id === 'boleto'
-                ? b.monthlyAfterDiscount * 12
+                ? b.annualTotal
                 : b.method.id === 'card_installments'
                   ? b.totalUpfront
                   : b.monthlyAfterDiscount
+            const description =
+              b.method.id === 'card_installments'
+                ? `Em até ${b.installments}x no cartão de crédito`
+                : b.method.description
 
             return (
               <div
@@ -405,7 +411,7 @@ export function ProposalPreview({ product, data, config }: ProposalPreviewProps)
                       {b.method.label}
                     </div>
                     <div style={{ fontSize: '10px', color: '#9ca3af', marginTop: '1px' }}>
-                      {b.method.description}
+                      {description}
                     </div>
                   </div>
                   {showsDiscount && (
@@ -420,7 +426,7 @@ export function ProposalPreview({ product, data, config }: ProposalPreviewProps)
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      −{(b.discount * 100).toFixed(0)}%
+                      −{formatPercent(b.discount)}%
                     </span>
                   )}
                 </div>

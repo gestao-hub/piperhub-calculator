@@ -87,40 +87,92 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
   },
 ]
 
+/**
+ * Overrides manuais por forma de pagamento (por simulação, não persistidos).
+ * `primary`/`secondary` sobrescrevem os dois valores em R$ exibidos em cada card:
+ *   - PIX / Cartão à vista: primary = Total à vista, secondary = Equivalente mensal
+ *   - Boleto:               primary = Mensal,         secondary = Anual
+ *   - Cartão parcelado:     primary = valor da parcela, secondary = Total
+ * Um campo sobrescrito "trava" (não recalcula a partir do desconto) até ser redefinido.
+ */
+export interface PaymentOverride {
+  discount?: number
+  installments?: number
+  primary?: number
+  secondary?: number
+}
+
+export type PaymentOverrides = Record<string, PaymentOverride>
+
 export interface PaymentBreakdown {
   method: PaymentMethod
   discount: number
   monthlyAfterDiscount: number
   totalUpfront: number
   installmentValue: number
+  annualTotal: number
   installments: number
+  overridden: {
+    discount: boolean
+    installments: boolean
+    primary: boolean
+    secondary: boolean
+  }
+  isOverridden: boolean
 }
 
 export function calculatePaymentBreakdowns(
   baseMonthly: number,
   config?: PricingConfig,
+  overrides?: PaymentOverrides,
 ): PaymentBreakdown[] {
   return PAYMENT_METHODS.map(method => {
-    const discount = config?.paymentDiscounts?.[method.id] ?? method.discount
-    const monthlyAfterDiscount = baseMonthly * (1 - discount)
-    const annualAfterDiscount = monthlyAfterDiscount * 12
+    const ov = overrides?.[method.id] ?? {}
 
-    let totalUpfront = monthlyAfterDiscount
-    let installmentValue = monthlyAfterDiscount
-    let installments = 1
+    const discount = ov.discount ?? config?.paymentDiscounts?.[method.id] ?? method.discount
+    const monthlyBase = baseMonthly * (1 - discount)
+    const annualBase = monthlyBase * 12
+
+    let monthlyAfterDiscount: number
+    let totalUpfront: number
+    let installmentValue: number
+    let annualTotal: number
+    let installments: number
 
     if (method.id === 'pix' || method.id === 'card_full') {
-      totalUpfront = annualAfterDiscount
-      installmentValue = annualAfterDiscount
       installments = 1
+      // Âncora: total anual à vista. Equivalente mensal deriva do total quando o
+      // total foi editado; sem override usa monthlyBase direto (paridade exata
+      // com a versão anterior — evita erro de ponto flutuante do round-trip /12).
+      totalUpfront = ov.primary ?? annualBase
+      monthlyAfterDiscount = ov.secondary ?? (ov.primary != null ? totalUpfront / 12 : monthlyBase)
+      installmentValue = totalUpfront
+      annualTotal = totalUpfront
     } else if (method.id === 'boleto') {
+      installments = 12
+      // Âncora: mensal. Anual deriva do mensal (ou override).
+      monthlyAfterDiscount = ov.primary ?? monthlyBase
+      annualTotal = ov.secondary ?? monthlyAfterDiscount * 12
       totalUpfront = monthlyAfterDiscount
       installmentValue = monthlyAfterDiscount
-      installments = 12
-    } else if (method.id === 'card_installments') {
-      totalUpfront = annualAfterDiscount
-      installments = 12
-      installmentValue = annualAfterDiscount / 12
+    } else {
+      // card_installments — âncora: total. Parcela deriva de total / nº de parcelas (ou override).
+      const rawInstallments = ov.installments
+      installments =
+        rawInstallments != null && Number.isFinite(rawInstallments)
+          ? Math.max(1, Math.round(rawInstallments))
+          : 12
+      totalUpfront = ov.secondary ?? annualBase
+      installmentValue = ov.primary ?? totalUpfront / installments
+      monthlyAfterDiscount = totalUpfront / 12
+      annualTotal = totalUpfront
+    }
+
+    const overridden = {
+      discount: ov.discount != null,
+      installments: ov.installments != null,
+      primary: ov.primary != null,
+      secondary: ov.secondary != null,
     }
 
     return {
@@ -129,7 +181,11 @@ export function calculatePaymentBreakdowns(
       monthlyAfterDiscount,
       totalUpfront,
       installmentValue,
+      annualTotal,
       installments,
+      overridden,
+      isOverridden:
+        overridden.discount || overridden.installments || overridden.primary || overridden.secondary,
     }
   })
 }
